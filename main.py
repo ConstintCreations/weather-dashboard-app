@@ -31,6 +31,8 @@ class WeatherDashboard(QMainWindow):
             "fonts/Stack.ttf"
         )
 
+        self.setFont(QFont("Stack"))
+
         layout = QVBoxLayout(self)
         header_layout = QHBoxLayout()
 
@@ -40,7 +42,6 @@ class WeatherDashboard(QMainWindow):
         self.date_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.date_label.setObjectName("dateLabel")
-        self.date_label.setFont(QFont("Stack", 18))
 
         left_date_button = QPushButton()
         right_date_button = QPushButton()
@@ -64,7 +65,9 @@ class WeatherDashboard(QMainWindow):
 
         header_layout.addStretch()
         header_layout.addWidget(left_date_button)
+        header_layout.addSpacing(15)
         header_layout.addWidget(self.date_label)
+        header_layout.addSpacing(15)
         header_layout.addWidget(right_date_button)
         header_layout.addStretch()
 

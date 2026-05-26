@@ -19,3 +19,7 @@ QPushButton:pressed {
     background-color: rgba(0,0,0,60);
     border: 1px solid rgba(0,0,0,80); 
 }
+
+#dateLabel {
+    font-size: 18px;
+}
