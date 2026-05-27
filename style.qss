@@ -20,6 +20,10 @@ QPushButton:pressed {
     border: 1px solid rgba(0,0,0,80); 
 }
 
+QPushButton:disabled {
+    background-color: rgba(0,0,0,0)
+}
+
 #dateLabel {
     font-size: 18px;
 }
