@@ -1,9 +1,24 @@
 from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton
-from PySide6.QtCore import QDate, QSize, QMargins, QDateTime;
+from PySide6.QtCore import QDate, QSize, QMargins, QDateTime, QEvent;
 from PySide6.QtGui import QIcon, Qt, QFontDatabase, QFont, QPen, QColor;
 from PySide6.QtCharts import QChart, QSplineSeries, QChartView, QValueAxis, QDateTimeAxis;
 
 class WeatherDashboard(QMainWindow):
+
+    def eventFilter(self, watched, event):
+
+        if watched == self.main_chart_view.viewport():
+
+            if event.type() == QEvent.Type.MouseMove:
+                self.chart_hover(event.pos())
+
+        return super().eventFilter(watched, event)
+    
+    def chart_hover(self, position):
+        chart_position = self.feels_like_chart.mapToValue(position)
+        closest_point = min(self.points, key= lambda point: abs(point[0].toMSecsSinceEpoch() - chart_position.x()))
+        date_time, temperature = closest_point
+        print(date_time, temperature)
 
     def get_hourly_data(self, date: QDate, data: str = "apparent_temperature"):
         times = self.weather["hourly"]["time"]
@@ -81,16 +96,16 @@ class WeatherDashboard(QMainWindow):
 
             self.feels_like_series.clear()
 
-            points = self.get_hourly_data(self.currentDate, "apparent_temperature")
+            self.points = self.get_hourly_data(self.currentDate, "apparent_temperature")
             
-            if not(points):
+            if not(self.points):
                 self.graph.setVisible(False)
                 return
             
-            for date_time, temperature in points:
+            for date_time, temperature in self.points:
                 self.feels_like_series.append(date_time.toMSecsSinceEpoch(), temperature)
 
-            self.feels_like_x.setRange(points[0][0], points[-1][0])
+            self.feels_like_x.setRange(self.points[0][0], self.points[-1][0])
             min_feels_like = self.weather['daily']['apparent_temperature_min'][self.currentDateIndex]
             max_feels_like = self.weather['daily']['apparent_temperature_max'][self.currentDateIndex]
             gap = (max_feels_like - min_feels_like) * 0.1
@@ -215,9 +230,12 @@ class WeatherDashboard(QMainWindow):
         self.feels_like_series.attachAxis(self.feels_like_y)
         
         self.main_chart_view = QChartView(self.feels_like_chart)
-        self.graph.setVisible(False)
-
         self.main_chart_view.setFixedHeight(200)
+        self.main_chart_view.setMouseTracking(True)
+        self.main_chart_view.viewport().setMouseTracking(True)
+        self.main_chart_view.viewport().installEventFilter(self)
+
+        self.graph.setVisible(False)
 
         self.update_weather_data_display()
 
