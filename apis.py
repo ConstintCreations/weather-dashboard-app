@@ -1,0 +1,16 @@
+import requests
+
+def get_location():
+    try:
+        data = requests.get("https://ipapi.co/json", timeout=5).json()
+        return {
+            "longitude": data["longitude"],
+            "latitude": data["latitude"],
+            "timezone": data["timezone"]
+        }
+    
+    except Exception:
+        return None
+    
+def get_weather(settings):
+    return requests.get(f"https://api.open-meteo.com/v1/forecast?latitude={settings['latitude']}&longitude={settings['longitude']}&daily=weather_code,temperature_2m_max,apparent_temperature_max,temperature_2m_min,apparent_temperature_min,sunset,sunrise,precipitation_sum,precipitation_probability_max&current=apparent_temperature,temperature_2m,is_day&minutely_15=temperature_2m,apparent_temperature,weather_code,is_day&timezone={settings['timezone']}&past_days=7&forecast_days=16&temperature_unit=fahrenheit&precipitation_unit=inch", timeout=8).json()
