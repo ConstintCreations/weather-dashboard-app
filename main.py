@@ -5,26 +5,27 @@ from PySide6.QtGui import QIcon, Qt, QFontDatabase, QFont;
 from pathlib import Path
 
 SETTINGS_FILE = Path("settings.json")
+WEATHER_DATA_FILE = Path("weather.json")
 
-def loadSettings():
-    with open("settings.json", "r") as file:
+def loadData(path):
+    with open(path, "r") as file:
         return json.load(file)
 
-def saveSettings(settings):
-    with open("settings.json", "w") as file:
-        json.dump(settings, file, indent=4)
+def saveData(data, path):
+    with open(path, "w") as file:
+        json.dump(data, file, indent=4)
 
 if SETTINGS_FILE.exists():
-    settings = loadSettings()
+    settings = loadData(SETTINGS_FILE)
 else:
     data = requests.get("https://ipapi.co/json").json()
     if data:
         settings = {
             "longitude": data["longitude"],
-            "latitude": data["longitude"],
+            "latitude": data["latitude"],
             "timezone": data["timezone"]
         }
-        saveSettings(settings)
+        saveData(settings, SETTINGS_FILE)
     else:
         settings = {
             "longitude": 0,
@@ -33,7 +34,14 @@ else:
         }
         print("Failure to auto-fetch data")
 
-    
+if SETTINGS_FILE.exists():
+    latitude = settings["latitude"]
+    longitude = settings["longitude"]
+    timezone = settings['timezone']
+
+    weather = requests.get(f"https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&daily=weather_code,temperature_2m_max,apparent_temperature_max,temperature_2m_min,apparent_temperature_min,sunset,sunrise,precipitation_sum,precipitation_probability_max&current=apparent_temperature,temperature_2m,is_day&minutely_15=temperature_2m,apparent_temperature,weather_code,is_day&timezone={timezone}&past_days=7&forecast_days=16&temperature_unit=fahrenheit&precipitation_unit=inch").json()
+    if (weather):
+        saveData(weather, WEATHER_DATA_FILE)
 
 class WeatherDashboard(QMainWindow):
 
@@ -54,8 +62,6 @@ class WeatherDashboard(QMainWindow):
 
     def __init__(self):
 
-        settings = loadSettings()
-
         super().__init__()
         self.resize(600, 350)
 
@@ -68,7 +74,7 @@ class WeatherDashboard(QMainWindow):
 
         self.setFont(QFont("Stack"))
 
-        layout = QVBoxLayout(self)
+        layout = QVBoxLayout()
         header_layout = QHBoxLayout()
 
         self.currentDate = QDate.currentDate()
