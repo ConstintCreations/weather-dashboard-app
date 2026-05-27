@@ -12,13 +12,20 @@ class WeatherDashboard(QMainWindow):
             if event.type() == QEvent.Type.MouseMove:
                 self.chart_hover(event.pos())
 
+            if event.type() == QEvent.Type.Leave:
+                self.tooltip.hide()
+
         return super().eventFilter(watched, event)
     
     def chart_hover(self, position):
         chart_position = self.feels_like_chart.mapToValue(position)
         closest_point = min(self.points, key= lambda point: abs(point[0].toMSecsSinceEpoch() - chart_position.x()))
         date_time, temperature = closest_point
-        print(date_time, temperature)
+
+        time_string = date_time.toString("h:mm AP")
+        self.tooltip.setText(f"{time_string} | {temperature}{self.units}")
+        self.tooltip.adjustSize()
+        self.tooltip.show()
 
     def get_hourly_data(self, date: QDate, data: str = "apparent_temperature"):
         times = self.weather["hourly"]["time"]
@@ -75,22 +82,22 @@ class WeatherDashboard(QMainWindow):
     def update_weather_data_display(self):
         if not(self.weather is None):
 
-            units = self.weather['current_units']['temperature_2m']
+            self.units = self.weather['current_units']['temperature_2m']
             precipitation_units = self.weather['daily_units']['precipitation_sum']
 
             if str(self.weather['daily']['time'][self.currentDateIndex]) == str(QDate.currentDate().toPython()):
                 self.current_temperature_label.setVisible(True)
-                self.current_temperature_label.setText(f"Temperature ({units}): {self.weather['current']['temperature_2m']}")
+                self.current_temperature_label.setText(f"Temperature ({self.units}): {self.weather['current']['temperature_2m']}")
                 self.feels_like_label.setVisible(True)
-                self.feels_like_label.setText(f"Feels Like ({units}): {self.weather['current']['apparent_temperature']}")
+                self.feels_like_label.setText(f"Feels Like ({self.units}): {self.weather['current']['apparent_temperature']}")
             else:
                 self.current_temperature_label.setVisible(False)
                 self.feels_like_label.setVisible(False)
 
-            self.daily_high_label.setText(f"High ({units}): {self.weather['daily']['temperature_2m_max'][self.currentDateIndex]}")
-            self.daily_low_label.setText(f"Low ({units}): {self.weather['daily']['temperature_2m_min'][self.currentDateIndex]}")
-            self.feels_like_high_label.setText(f"Feels Like High ({units}): {self.weather['daily']['apparent_temperature_max'][self.currentDateIndex]}")
-            self.feels_like_low_label.setText(f"Feels Like Low ({units}): {self.weather['daily']['apparent_temperature_min'][self.currentDateIndex]}")
+            self.daily_high_label.setText(f"High ({self.units}): {self.weather['daily']['temperature_2m_max'][self.currentDateIndex]}")
+            self.daily_low_label.setText(f"Low ({self.units}): {self.weather['daily']['temperature_2m_min'][self.currentDateIndex]}")
+            self.feels_like_high_label.setText(f"Feels Like High ({self.units}): {self.weather['daily']['apparent_temperature_max'][self.currentDateIndex]}")
+            self.feels_like_low_label.setText(f"Feels Like Low ({self.units}): {self.weather['daily']['apparent_temperature_min'][self.currentDateIndex]}")
             self.precipitation_sum_label.setText(f"Estimated Precipitation ({precipitation_units}): {self.weather['daily']['precipitation_sum'][self.currentDateIndex]}")
             self.precipitation_chance_label.setText(f"Precipitation Chance (%): {self.weather['daily']['precipitation_probability_max'][self.currentDateIndex]}")
 
@@ -112,6 +119,8 @@ class WeatherDashboard(QMainWindow):
             self.feels_like_y.setRange(min_feels_like - gap, max_feels_like + gap)
 
             self.graph.setVisible(True)
+
+            self.tooltip.hide()
 
     def __init__(self, settings, weather):
         self.settings = settings
@@ -211,7 +220,7 @@ class WeatherDashboard(QMainWindow):
         self.feels_like_chart.addSeries(self.feels_like_series)
 
         self.feels_like_x = QDateTimeAxis()
-        self.feels_like_x.setFormat("h:mm AP")
+        self.feels_like_x.setFormat("h AP")
         self.feels_like_x.setTickCount(5)
         self.feels_like_x.setLabelsColor(QColor("#888888"))
         self.feels_like_x.setGridLinePen(self.feels_like_grid_pen)
@@ -236,6 +245,12 @@ class WeatherDashboard(QMainWindow):
         self.main_chart_view.viewport().installEventFilter(self)
 
         self.graph.setVisible(False)
+
+        self.tooltip = QLabel(self.main_chart_view)
+        self.tooltip.setFont(QFont("Stack", 10))
+        self.tooltip.setObjectName("tooltip")
+        self.tooltip.move(25, 0)
+        self.tooltip.hide()
 
         self.update_weather_data_display()
 

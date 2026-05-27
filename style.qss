@@ -37,3 +37,10 @@ QChartView {
     border-radius: 12px;
     color: #ffffff;
 }
+
+QLabel#tooltip {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    margin: 10px;
+    padding: 6px;
+}
