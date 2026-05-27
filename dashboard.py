@@ -39,14 +39,23 @@ class WeatherDashboard(QMainWindow):
         if not(self.weather is None):
 
             units = self.weather['current_units']['temperature_2m']
-            print(self.weather['daily']['time'][self.currentDateIndex])
-            print(QDate.currentDate().toPython())
+            precipitation_units = self.weather['daily_units']['precipitation_sum']
+
             if str(self.weather['daily']['time'][self.currentDateIndex]) == str(QDate.currentDate().toPython()):
                 self.current_temperature_label.setVisible(True)
                 self.current_temperature_label.setText(f"Temperature ({units}): {self.weather['current']['temperature_2m']}")
+                self.feels_like_label.setVisible(True)
+                self.feels_like_label.setText(f"Feels Like ({units}): {self.weather['current']['apparent_temperature']}")
             else:
                 self.current_temperature_label.setVisible(False)
+                self.feels_like_label.setVisible(False)
+
             self.daily_high_label.setText(f"High ({units}): {self.weather['daily']['temperature_2m_max'][self.currentDateIndex]}")
+            self.daily_low_label.setText(f"Low ({units}): {self.weather['daily']['temperature_2m_min'][self.currentDateIndex]}")
+            self.feels_like_high_label.setText(f"Feels Like High ({units}): {self.weather['daily']['apparent_temperature_max'][self.currentDateIndex]}")
+            self.feels_like_low_label.setText(f"Feels Like Low ({units}): {self.weather['daily']['apparent_temperature_min'][self.currentDateIndex]}")
+            self.precipitation_sum_label.setText(f"Estimated Precipitation ({precipitation_units}): {self.weather['daily']['precipitation_sum'][self.currentDateIndex]}")
+            self.precipitation_chance_label.setText(f"Precipitation Chance (%): {self.weather['daily']['precipitation_probability_max'][self.currentDateIndex]}")
 
     def __init__(self, settings, weather):
         self.settings = settings
