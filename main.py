@@ -1,7 +1,39 @@
-import sys
+import sys, json, requests
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton
 from PySide6.QtCore import QDate, QSize;
 from PySide6.QtGui import QIcon, Qt, QFontDatabase, QFont;
+from pathlib import Path
+
+SETTINGS_FILE = Path("settings.json")
+
+def loadSettings():
+    with open("settings.json", "r") as file:
+        return json.load(file)
+
+def saveSettings(settings):
+    with open("settings.json", "w") as file:
+        json.dump(settings, file, indent=4)
+
+if SETTINGS_FILE.exists():
+    settings = loadSettings()
+else:
+    data = requests.get("https://ipapi.co/json").json()
+    if data:
+        settings = {
+            "longitude": data["longitude"],
+            "latitude": data["longitude"],
+            "timezone": data["timezone"]
+        }
+        saveSettings(settings)
+    else:
+        settings = {
+            "longitude": 0,
+            "latitude": 0,
+            "timezone": ""
+        }
+        print("Failure to auto-fetch data")
+
+    
 
 class WeatherDashboard(QMainWindow):
 
@@ -21,6 +53,9 @@ class WeatherDashboard(QMainWindow):
         self.update_date()
 
     def __init__(self):
+
+        settings = loadSettings()
+
         super().__init__()
         self.resize(600, 350)
 
