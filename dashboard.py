@@ -11,11 +11,18 @@ class WeatherDashboard(QMainWindow):
 
         points = []
 
+        next_date_time = date.addDays(1)
+
         for time, temperature in zip(times, temperatures):
             date_time = QDateTime.fromString(time, "yyyy-MM-ddTHH:mm")
+            
 
             if date_time.date() == date:
                 points.append((date_time, temperature))
+
+            if date_time.date() == next_date_time:
+                points.append((date_time, temperature))
+                break
 
         return points
 
@@ -39,14 +46,14 @@ class WeatherDashboard(QMainWindow):
                 self.left_date_button.setIcon(QIcon())
 
     def next_date(self):
-        if (self.currentDateIndex + 1) <= 22:
+        if (self.currentDateIndex + 1) <= 20:
             self.currentDateIndex += 1
             self.currentDate = self.currentDate.addDays(1)
             self.update_date_display()
             self.update_weather_data_display()
             self.left_date_button.setEnabled(True)
             self.left_date_button.setIcon(QIcon("icons/leftArrow.svg"))
-            if self.currentDateIndex == 22:
+            if self.currentDateIndex == 20:
                 self.right_date_button.setEnabled(False)
                 self.right_date_button.setIcon(QIcon())
 
@@ -190,7 +197,7 @@ class WeatherDashboard(QMainWindow):
 
         self.feels_like_x = QDateTimeAxis()
         self.feels_like_x.setFormat("h:mm AP")
-        self.feels_like_x.setTickCount(4)
+        self.feels_like_x.setTickCount(5)
         self.feels_like_x.setLabelsColor(QColor("#888888"))
         self.feels_like_x.setGridLinePen(self.feels_like_grid_pen)
         self.feels_like_x.setLinePen(self.feels_like_grid_pen)
