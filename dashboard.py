@@ -1,9 +1,23 @@
 from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton
-from PySide6.QtCore import QDate, QSize, QMargins;
+from PySide6.QtCore import QDate, QSize, QMargins, QDateTime;
 from PySide6.QtGui import QIcon, Qt, QFontDatabase, QFont, QPen, QColor;
 from PySide6.QtCharts import QChart, QSplineSeries, QChartView, QValueAxis, QDateTimeAxis;
 
 class WeatherDashboard(QMainWindow):
+
+    def get_hourly_data(self, date: QDate, data: str = "apparent_temperature"):
+        times = self.weather["hourly"]["time"]
+        temperatures = self.weather["hourly"][data]
+
+        points = []
+
+        for time, temperature in zip(times, temperatures):
+            date_time = QDateTime.fromString(time, "yyyy-MM-ddTHH:mm")
+
+            if date_time.date() == date:
+                points.append((date_time, temperature))
+
+        return points
 
     def update_date_display(self):
         date_string = self.currentDate.toString("dddd, MMMM, d")
@@ -57,6 +71,25 @@ class WeatherDashboard(QMainWindow):
             self.feels_like_low_label.setText(f"Feels Like Low ({units}): {self.weather['daily']['apparent_temperature_min'][self.currentDateIndex]}")
             self.precipitation_sum_label.setText(f"Estimated Precipitation ({precipitation_units}): {self.weather['daily']['precipitation_sum'][self.currentDateIndex]}")
             self.precipitation_chance_label.setText(f"Precipitation Chance (%): {self.weather['daily']['precipitation_probability_max'][self.currentDateIndex]}")
+
+            self.feels_like_series.clear()
+
+            points = self.get_hourly_data(self.currentDate, "apparent_temperature")
+            
+            if not(points):
+                self.graph.setVisible(False)
+                return
+            
+            for date_time, temperature in points:
+                self.feels_like_series.append(date_time.toMSecsSinceEpoch(), temperature)
+
+            self.feels_like_x.setRange(points[0][0], points[-1][0])
+            min_feels_like = self.weather['daily']['apparent_temperature_min'][self.currentDateIndex]
+            max_feels_like = self.weather['daily']['apparent_temperature_max'][self.currentDateIndex]
+            gap = (max_feels_like - min_feels_like) * 0.1
+            self.feels_like_y.setRange(min_feels_like - gap, max_feels_like + gap)
+
+            self.graph.setVisible(True)
 
     def __init__(self, settings, weather):
         self.settings = settings
@@ -140,15 +173,13 @@ class WeatherDashboard(QMainWindow):
 
         self.feels_like_pen = QPen(QColor("#ff8800"))
         self.feels_like_pen.setWidth(5)
+        self.feels_like_pen.setCapStyle(Qt.PenCapStyle.RoundCap)
 
         self.feels_like_grid_pen = QPen(QColor("#555555"))
         self.feels_like_grid_pen.setWidth(3)
 
         self.feels_like_series = QSplineSeries()
         self.feels_like_series.setPen(self.feels_like_pen)
-        self.feels_like_series.append(0, 6)
-        self.feels_like_series.append(1, 62)
-        self.feels_like_series.append(2, 44)
 
         self.feels_like_chart = QChart()
         self.feels_like_chart.legend().hide()
@@ -169,17 +200,15 @@ class WeatherDashboard(QMainWindow):
         self.feels_like_series.attachAxis(self.feels_like_x)
 
         self.feels_like_y = QValueAxis()
-        self.feels_like_y.setRange(6, 67)
-        self.feels_like_y.setTickCount(2)
+        self.feels_like_y.setLabelsVisible(False)
         self.feels_like_y.setGridLineVisible(False)
-        self.feels_like_y.setLabelsColor(QColor("#888888"))
         self.feels_like_y.setLineVisible(False)
-        self.feels_like_y.setLabelsFont(QFont("Stack", 10))
 
         self.feels_like_chart.addAxis(self.feels_like_y, Qt.AlignmentFlag.AlignLeft)
         self.feels_like_series.attachAxis(self.feels_like_y)
         
         self.main_chart_view = QChartView(self.feels_like_chart)
+        self.graph.setVisible(False)
 
         self.main_chart_view.setFixedHeight(200)
 
