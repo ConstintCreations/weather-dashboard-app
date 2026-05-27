@@ -1,4 +1,4 @@
-QWidget {
+centralWidget {
     background-color: #303030;
     color: #ffffff;
 }
@@ -26,4 +26,14 @@ QPushButton:disabled {
 
 #dateLabel {
     font-size: 18px;
+}
+
+QChartView {
+    background-color: transparent;
+}
+
+#graph {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    color: #ffffff;
 }

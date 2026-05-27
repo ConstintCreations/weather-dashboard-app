@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton
-from PySide6.QtCore import QDate, QSize;
+from PySide6.QtCore import QDate, QSize, QMargins;
 from PySide6.QtGui import QIcon, Qt, QFontDatabase, QFont, QPen, QColor;
-from PySide6.QtCharts import QChart, QSplineSeries, QChartView, QValueAxis;
+from PySide6.QtCharts import QChart, QSplineSeries, QChartView, QValueAxis, QDateTimeAxis;
 
 class WeatherDashboard(QMainWindow):
 
@@ -63,9 +63,10 @@ class WeatherDashboard(QMainWindow):
         self.weather = weather
 
         super().__init__()
-        self.resize(600, 350)
+        self.resize(650, 450)
 
         centralWidget = QWidget()
+        centralWidget.setObjectName("centralWidget")
         self.setCentralWidget(centralWidget)
 
         QFontDatabase.addApplicationFont(
@@ -114,7 +115,7 @@ class WeatherDashboard(QMainWindow):
         header_layout.addStretch()
 
         layout.addLayout(header_layout)
-        layout.addStretch()
+        layout.addSpacing(20)
 
         central_layout = QVBoxLayout()
 
@@ -129,8 +130,19 @@ class WeatherDashboard(QMainWindow):
         self.precipitation_sum_label = QLabel()
         self.precipitation_chance_label = QLabel()
 
+        self.graph = QWidget()
+        self.graph.setObjectName("graph")
+
+        self.graph_layout = QVBoxLayout(self.graph)
+
+        self.main_chart_title = QLabel("Feels Like (\u00b0F)")
+        self.main_chart_title.setFont(QFont("Stack", 16))
+
         self.feels_like_pen = QPen(QColor("#ff8800"))
         self.feels_like_pen.setWidth(5)
+
+        self.feels_like_grid_pen = QPen(QColor("#555555"))
+        self.feels_like_grid_pen.setWidth(3)
 
         self.feels_like_series = QSplineSeries()
         self.feels_like_series.setPen(self.feels_like_pen)
@@ -140,28 +152,36 @@ class WeatherDashboard(QMainWindow):
 
         self.feels_like_chart = QChart()
         self.feels_like_chart.legend().hide()
-        self.feels_like_chart.setBackgroundVisible(True)
+        self.feels_like_chart.setBackgroundVisible(False)
+        self.feels_like_chart.setMargins(QMargins(0,0,0,0))
         self.feels_like_chart.setPlotAreaBackgroundVisible(False)
         self.feels_like_chart.addSeries(self.feels_like_series)
 
-        self.feels_like_x = QValueAxis()
-        self.feels_like_x.setRange(0, 2)
+        self.feels_like_x = QDateTimeAxis()
+        self.feels_like_x.setFormat("h:mm AP")
         self.feels_like_x.setTickCount(4)
+        self.feels_like_x.setLabelsColor(QColor("#888888"))
+        self.feels_like_x.setGridLinePen(self.feels_like_grid_pen)
+        self.feels_like_x.setLinePen(self.feels_like_grid_pen)
+        self.feels_like_x.setLabelsFont(QFont("Stack", 10))
         
         self.feels_like_chart.addAxis(self.feels_like_x, Qt.AlignmentFlag.AlignBottom)
         self.feels_like_series.attachAxis(self.feels_like_x)
 
         self.feels_like_y = QValueAxis()
-        self.feels_like_y.setRange(0, 80)
+        self.feels_like_y.setRange(6, 67)
         self.feels_like_y.setTickCount(2)
         self.feels_like_y.setGridLineVisible(False)
+        self.feels_like_y.setLabelsColor(QColor("#888888"))
+        self.feels_like_y.setLineVisible(False)
+        self.feels_like_y.setLabelsFont(QFont("Stack", 10))
 
         self.feels_like_chart.addAxis(self.feels_like_y, Qt.AlignmentFlag.AlignLeft)
         self.feels_like_series.attachAxis(self.feels_like_y)
         
         self.main_chart_view = QChartView(self.feels_like_chart)
 
-        self.main_chart_view.setMinimumHeight(200)
+        self.main_chart_view.setFixedHeight(200)
 
         self.update_weather_data_display()
 
@@ -176,9 +196,14 @@ class WeatherDashboard(QMainWindow):
         central_layout.addWidget(self.precipitation_sum_label)
         central_layout.addWidget(self.precipitation_chance_label)
 
-        central_layout.addWidget(self.main_chart_view)
+        self.graph_layout.addWidget(self.main_chart_title)
+        self.graph_layout.addWidget(self.main_chart_view)
 
+        layout.addStretch()
         layout.addLayout(central_layout)
+        layout.addSpacing(20)
+        layout.addStretch()
+        layout.addWidget(self.graph)
         layout.addStretch()
 
         centralWidget.setLayout(layout)
