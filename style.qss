@@ -1,5 +1,8 @@
-centralWidget {
+QWidget#centralWidget {
     background-color: #303030;
+}
+
+QWidget {
     color: #ffffff;
 }
                 
