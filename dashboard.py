@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton
 from PySide6.QtCore import QDate, QSize, QMargins, QDateTime, QEvent;
 from PySide6.QtGui import QIcon, Qt, QFontDatabase, QFont, QPen, QColor;
-from PySide6.QtCharts import QChart, QSplineSeries, QChartView, QValueAxis, QDateTimeAxis, QScatterSeries;
+from PySide6.QtCharts import QChart, QSplineSeries, QChartView, QValueAxis, QDateTimeAxis, QScatterSeries, QLineSeries, QAreaSeries;
 
 class WeatherDashboard(QMainWindow):
 
@@ -121,8 +121,10 @@ class WeatherDashboard(QMainWindow):
             gap = (max_feels_like - min_feels_like) * 0.1
             self.feels_like_y.setRange(min_feels_like - gap, max_feels_like + gap)
 
+            self.line_series.clear()
+            self.line_series.append(self.points[0][0].toMSecsSinceEpoch(), 0)
+            self.line_series.append(self.points[-1][0].toMSecsSinceEpoch(), 0)
             self.graph.setVisible(True)
-
             self.tooltip.hide()
 
     def __init__(self, settings, weather):
@@ -244,11 +246,23 @@ class WeatherDashboard(QMainWindow):
 
         self.hover_dot = QScatterSeries()
         self.hover_dot.setMarkerSize(12)
-        self.hover_dot.setColor(QColor("#ffb55b"))
-        self.hover_dot.setPen(QColor("#ffb55b"))
+        self.hover_dot.setColor(QColor("#a85a00"))
+        self.hover_dot.setPen(QColor("#a85a00"))
         self.feels_like_chart.addSeries(self.hover_dot)
         self.hover_dot.attachAxis(self.feels_like_x)
         self.hover_dot.attachAxis(self.feels_like_y)
+
+        self.line_series = QLineSeries()
+
+        area_fill_color = QColor("#ff8800")
+        area_fill_color.setAlpha(50)
+
+        self.area_series = QAreaSeries(self.feels_like_series, self.line_series)
+        self.area_series.setBrush(area_fill_color)
+        self.area_series.setPen(Qt.PenStyle.NoPen)
+        self.feels_like_chart.addSeries(self.area_series)
+        self.area_series.attachAxis(self.feels_like_x)
+        self.area_series.attachAxis(self.feels_like_y)
         
         self.main_chart_view = QChartView(self.feels_like_chart)
         self.main_chart_view.viewport().setCursor(Qt.CursorShape.BlankCursor)
