@@ -2,4 +2,5 @@
 build/
 dist/
 *.spec
-*.json
+settings.json
+weather.json

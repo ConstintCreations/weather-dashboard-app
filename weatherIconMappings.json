@@ -1,0 +1,294 @@
+{
+	"0": {
+        "day": {
+            "description": "Sunny",
+            "icon": "icons/weather/day/sun.svg"
+        }, 
+        "night": { 
+            "description": "Clear", 
+            "icon": "icons/weather/night/moon.svg"
+        }
+    },
+
+    "1": {
+        "day": {
+            "description": "Mostly Sunny",
+            "icon": "icons/weather/day/sun.svg"
+        }, 
+        "night": { 
+            "description": "Mostly Clear", 
+            "icon": "icons/weather/night/moon.svg"
+        }
+    },
+    "2": {
+        "day": {
+            "description": "Partly Cloudy",
+            "icon": "icons/weather/day/partlyCloudyDay.svg"
+        }, 
+        "night": { 
+            "description": "Partly Cloudy", 
+            "icon": "icons/weather/night/partlyCloudyNight.svg"
+        }
+    },
+    "3": {
+        "day": {
+            "description": "Cloudy",
+            "icon": "icons/weather/neutral/cloud.svg"
+        }, 
+        "night": { 
+            "description": "Cloudy", 
+            "icon": "icons/weather/neutral/cloud.svg"
+        }
+    },
+
+    "45": {
+        "day": {
+            "description": "Foggy",
+            "icon": "icons/weather/neutral/fog.svg"
+        }, 
+        "night": { 
+            "description": "Foggy", 
+            "icon": "icons/weather/neutral/fog.svg"
+        }
+    },
+    "48": {
+        "day": {
+            "description": "Rime Fog",
+            "icon": "icons/weather/neutral/fog.svg"
+        }, 
+        "night": { 
+            "description": "Rime Fog", 
+            "icon": "icons/weather/neutral/fog.svg"
+        }
+    },
+
+    "51": {
+        "day": {
+            "description": "Light Drizzle",
+            "icon": "icons/weather/neutral/lightDrizzle.svg"
+        }, 
+        "night": { 
+            "description": "Light Drizzle", 
+            "icon": "icons/weather/neutral/lightDrizzle.svg"
+        }
+    },
+    "53": {
+        "day": {
+            "description": "Moderate Drizzle",
+            "icon": "icons/weather/neutral/moderateDrizzle.svg"
+        }, 
+        "night": { 
+            "description": "Moderate Drizzle", 
+            "icon": "icons/weather/neutral/moderateDrizzle.svg"
+        }
+    },
+    "55": {
+        "day": {
+            "description": "Heavy Drizzle",
+            "icon": "icons/weather/neutral/heavyDrizzle.svg"
+        }, 
+        "night": { 
+            "description": "Heavy Drizzle", 
+            "icon": "icons/weather/neutral/heavyDrizzle.svg"
+        }
+    },
+
+    "56": {
+        "day": {
+            "description": "Light Freezing Drizzle",
+            "icon": "icons/weather/neutral/lightFreezingDrizzle.svg"
+        }, 
+        "night": { 
+            "description": "Light Freezing Drizzle", 
+            "icon": "icons/weather/neutral/lightFreezingDrizzle.svg"
+        }
+    },
+    "57": {
+        "day": {
+            "description": "Heavy Freezing Drizzle",
+            "icon": "icons/weather/neutral/heavyFreezingDrizzle.svg"
+        }, 
+        "night": { 
+            "description": "Heavy Freezing Drizzle", 
+            "icon": "icons/weather/neutral/heavyFreezingDrizzle.svg"
+        }
+    },
+
+    "61": {
+        "day": {
+            "description": "Light Rain",
+            "icon": "icons/weather/neutral/lightRain.svg"
+        }, 
+        "night": { 
+            "description": "Light Rain", 
+            "icon": "icons/weather/neutral/lightRain.svg"
+        }
+    },
+    "63": {
+        "day": {
+            "description": "Moderate Rain",
+            "icon": "icons/weather/neutral/moderateRain.svg"
+        }, 
+        "night": { 
+            "description": "Moderate Rain", 
+            "icon": "icons/weather/neutral/moderateRain.svg"
+        }
+    },
+    "65": {
+        "day": {
+            "description": "Heavy Rain",
+            "icon": "icons/weather/neutral/heavyRain.svg"
+        }, 
+        "night": { 
+            "description": "Heavy Rain", 
+            "icon": "icons/weather/neutral/heavyRain.svg"
+        }
+    },
+
+    "66": {
+        "day": {
+            "description": "Light Freezing Rain",
+            "icon": "icons/weather/neutral/lightFreezingRain.svg"
+        }, 
+        "night": { 
+            "description": "Light Freezing Rain", 
+            "icon": "icons/weather/neutral/lightFreezingRain.svg"
+        }
+    },
+    "67": {
+        "day": {
+            "description": "Heavy Freezing Rain",
+            "icon": "icons/weather/neutral/heavyFreezingRain.svg"
+        }, 
+        "night": { 
+            "description": "Heavy Freezing Rain",
+            "icon": "icons/weather/neutral/heavyFreezingRain.svg"
+        }
+    },
+
+    "71": {
+        "day": {
+            "description": "Light Snowfall",
+            "icon": "icons/weather/neutral/lightSnow.svg"
+        }, 
+        "night": { 
+            "description": "Light Snowfall", 
+            "icon": "icons/weather/neutral/lightSnow.svg"
+        }
+    },
+    "73": {
+        "day": {
+            "description": "Moderate Snowfall",
+            "icon": "icons/weather/neutral/moderateSnow.svg"
+        }, 
+        "night": { 
+            "description": "Moderate Snowfall", 
+            "icon": "icons/weather/neutral/moderateSnow.svg"
+        }
+    },
+    "75": {
+        "day": {
+            "description": "Heavy Snowfall",
+            "icon": "icons/weather/neutral/heavySnow.svg"
+        }, 
+        "night": { 
+            "description": "Heavy Snowfall", 
+            "icon": "icons/weather/neutral/heavySnow.svg"
+        }
+    },
+
+    "77": {
+        "day": {
+            "description": "Snow Grains",
+            "icon": "icons/weather/neutral/lightSnow.svg"
+        }, 
+        "night": { 
+            "description": "Snow Grains", 
+            "icon": "icons/weather/neutral/lightSnow.svg"
+        }
+    },
+
+    "80": {
+        "day": {
+            "description": "Light Rain Showers",
+            "icon": "icons/weather/neutral/lightRainShower.svg"
+        }, 
+        "night": { 
+            "description": "Light Rain Showers", 
+            "icon": "icons/weather/neutral/lightRainShower.svg"
+        }
+    },
+    "81": {
+        "day": {
+            "description": "Moderate Rain Showers",
+            "icon": "icons/weather/neutral/moderateRainShower.svg"
+        }, 
+        "night": { 
+            "description": "Moderate Rain Showers", 
+            "icon": "icons/weather/neutral/moderateRainShower.svg"
+        }
+    },
+    "82": {
+        "day": {
+            "description": "Heavy Rain Showers",
+            "icon": "icons/weather/neutral/heavyRainShower.svg"
+        }, 
+        "night": { 
+            "description": "Heavy Rain Showers", 
+            "icon": "icons/weather/neutral/heavyRainShower.svg"
+        }
+    },
+
+    "85": {
+        "day": {
+            "description": "Light Snow Showers",
+            "icon": "icons/weather/neutral/lightSnowShower.svg"
+        }, 
+        "night": { 
+            "description": "Light Snow Showers", 
+            "icon": "icons/weather/neutral/lightSnowShower.svg"
+        }
+    },
+    "86": {
+        "day": {
+            "description": "Heavy Snow Showers",
+            "icon": "icons/weather/neutral/heavySnowShower.svg"
+        }, 
+        "night": { 
+            "description": "Heavy Snow Showers", 
+            "icon": "icons/weather/neutral/heavySnowShower.svg"
+        }
+    },
+
+    "95": {
+        "day": {
+            "description": "Thunderstorm",
+            "icon": "icons/weather/neutral/thunderstorm.svg"
+        }, 
+        "night": { 
+            "description": "Thunderstorm", 
+            "icon": "icons/weather/neutral/thunderstorm.svg"
+        }
+    },
+    
+    "96": {
+        "day": {
+            "description": "Thunderstorm",
+            "icon": "icons/weather/neutral/thunderstorm.svg"
+        }, 
+        "night": { 
+            "description": "Thunderstorm", 
+            "icon": "icons/weather/neutral/thunderstorm.svg"
+        }
+    },
+    "99": {
+        "day": {
+            "description": "Thunderstorm",
+            "icon": "icons/weather/neutral/thunderstorm.svg"
+        }, 
+        "night": { 
+            "description": "Thunderstorm", 
+            "icon": "icons/weather/neutral/thunderstorm.svg"
+        }
+    }
+}
