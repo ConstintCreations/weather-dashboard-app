@@ -250,7 +250,7 @@ class WeatherDashboard(QMainWindow):
         self.hover_dot.attachAxis(self.feels_like_y)
         
         self.main_chart_view = QChartView(self.feels_like_chart)
-        self.main_chart_view.viewport().setCursor(Qt.CursorShape.PointingHandCursor)
+        self.main_chart_view.viewport().setCursor(Qt.CursorShape.BlankCursor)
         self.main_chart_view.setFixedHeight(200)
         self.main_chart_view.setMouseTracking(True)
         self.main_chart_view.viewport().setMouseTracking(True)
@@ -261,6 +261,7 @@ class WeatherDashboard(QMainWindow):
         self.tooltip = QLabel(self.main_chart_view)
         self.tooltip.setFont(QFont("Stack", 10))
         self.tooltip.setObjectName("tooltip")
+        self.tooltip.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True)
         self.tooltip.move(25, 0)
         self.tooltip.hide()
 
