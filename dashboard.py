@@ -14,6 +14,7 @@ class WeatherDashboard(QMainWindow):
 
             if event.type() == QEvent.Type.Leave:
                 self.tooltip.hide()
+                self.hover_dot.clear()
 
         return super().eventFilter(watched, event)
     
