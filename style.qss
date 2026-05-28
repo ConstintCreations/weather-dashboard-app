@@ -35,7 +35,7 @@ QChartView {
     background-color: transparent;
 }
 
-#graph {
+#chart, #chartMinAvgMax {
     background-color: rgba(0, 0, 0, 0.2);
     border-radius: 12px;
     color: #ffffff;

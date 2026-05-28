@@ -99,8 +99,6 @@ class WeatherDashboard(QMainWindow):
 
             self.daily_high_label.setText(f"High ({self.units}): {self.weather['daily']['temperature_2m_max'][self.currentDateIndex]}")
             self.daily_low_label.setText(f"Low ({self.units}): {self.weather['daily']['temperature_2m_min'][self.currentDateIndex]}")
-            self.feels_like_high_label.setText(f"Feels Like High ({self.units}): {self.weather['daily']['apparent_temperature_max'][self.currentDateIndex]}")
-            self.feels_like_low_label.setText(f"Feels Like Low ({self.units}): {self.weather['daily']['apparent_temperature_min'][self.currentDateIndex]}")
             self.precipitation_sum_label.setText(f"Estimated Precipitation ({precipitation_units}): {self.weather['daily']['precipitation_sum'][self.currentDateIndex]}")
             self.precipitation_chance_label.setText(f"Precipitation Chance (%): {self.weather['daily']['precipitation_probability_max'][self.currentDateIndex]}")
 
@@ -109,30 +107,38 @@ class WeatherDashboard(QMainWindow):
             self.points = self.get_hourly_data(self.currentDate, "apparent_temperature")
             
             if not(self.points):
-                self.graph.setVisible(False)
+                self.chart.setVisible(False)
                 return
             
             for date_time, temperature in self.points:
                 self.feels_like_series.append(date_time.toMSecsSinceEpoch(), temperature)
 
             self.feels_like_x.setRange(self.points[0][0], self.points[-1][0])
-            min_feels_like = self.weather['daily']['apparent_temperature_min'][self.currentDateIndex]
-            max_feels_like = self.weather['daily']['apparent_temperature_max'][self.currentDateIndex]
+            min_feels_like = min(self.points, key= lambda point: point[1])[1]
+            max_feels_like = max(self.points, key= lambda point: point[1])[1]
             gap = (max_feels_like - min_feels_like) * 0.1
             self.feels_like_y.setRange(min_feels_like - gap, max_feels_like + gap)
 
             self.line_series.clear()
             self.line_series.append(self.points[0][0].toMSecsSinceEpoch(), 0)
             self.line_series.append(self.points[-1][0].toMSecsSinceEpoch(), 0)
-            self.graph.setVisible(True)
+            self.chart.setVisible(True)
             self.tooltip.hide()
+
+            self.chart_max.setText(f"High: {max_feels_like}{self.units}")
+            self.chart_avg.setText(f"Avg: {round((max_feels_like+min_feels_like)/2, 1)}{self.units}")
+            self.chart_min.setText(f"Low: {min_feels_like}{self.units}")
+            self.chart_min_avg_max.setVisible(True)
+
+            self.feels_like_high_label.setText(f"Feels Like High ({self.units}): {max_feels_like}")
+            self.feels_like_low_label.setText(f"Feels Like Low ({self.units}): {min_feels_like}")
 
     def __init__(self, settings, weather):
         self.settings = settings
         self.weather = weather
 
         super().__init__()
-        self.resize(650, 450)
+        self.resize(800, 450)
 
         centralWidget = QWidget()
         centralWidget.setObjectName("centralWidget")
@@ -199,10 +205,32 @@ class WeatherDashboard(QMainWindow):
         self.precipitation_sum_label = QLabel()
         self.precipitation_chance_label = QLabel()
 
-        self.graph = QWidget()
-        self.graph.setObjectName("graph")
+        self.chart = QWidget()
+        self.chart.setObjectName("chart")
 
-        self.graph_layout = QVBoxLayout(self.graph)
+        self.chart_layout = QVBoxLayout(self.chart)
+
+        self.chart_min_avg_max = QWidget()
+        self.chart_min_avg_max.setObjectName("chartMinAvgMax")
+        self.chart_min_avg_max_layout = QHBoxLayout(self.chart_min_avg_max)
+
+        self.chart_max = QLabel()
+        self.chart_avg = QLabel()
+        self.chart_min = QLabel()
+
+        self.chart_max.setFont(QFont("Stack", 12))
+        self.chart_avg.setFont(QFont("Stack", 12))
+        self.chart_min.setFont(QFont("Stack", 12))
+
+        self.chart_min_avg_max_layout.addStretch()
+        self.chart_min_avg_max_layout.addWidget(self.chart_min)
+        self.chart_min_avg_max_layout.addStretch()
+        self.chart_min_avg_max_layout.addWidget(self.chart_avg)
+        self.chart_min_avg_max_layout.addStretch()
+        self.chart_min_avg_max_layout.addWidget(self.chart_max)
+        self.chart_min_avg_max_layout.addStretch()
+
+        self.chart_min_avg_max.setVisible(False)
 
         self.main_chart_title = QLabel("Feels Like (\u00b0F)")
         self.main_chart_title.setFont(QFont("Stack", 16))
@@ -271,7 +299,7 @@ class WeatherDashboard(QMainWindow):
         self.main_chart_view.viewport().setMouseTracking(True)
         self.main_chart_view.viewport().installEventFilter(self)
 
-        self.graph.setVisible(False)
+        self.chart.setVisible(False)
 
         self.tooltip = QLabel(self.main_chart_view)
         self.tooltip.setFont(QFont("Stack", 10))
@@ -293,14 +321,15 @@ class WeatherDashboard(QMainWindow):
         central_layout.addWidget(self.precipitation_sum_label)
         central_layout.addWidget(self.precipitation_chance_label)
 
-        self.graph_layout.addWidget(self.main_chart_title)
-        self.graph_layout.addWidget(self.main_chart_view)
+        self.chart_layout.addWidget(self.main_chart_title)
+        self.chart_layout.addWidget(self.main_chart_view)
 
         layout.addStretch()
         layout.addLayout(central_layout)
         layout.addSpacing(20)
         layout.addStretch()
-        layout.addWidget(self.graph)
+        layout.addWidget(self.chart)
+        layout.addWidget(self.chart_min_avg_max)
         layout.addStretch()
 
         centralWidget.setLayout(layout)
