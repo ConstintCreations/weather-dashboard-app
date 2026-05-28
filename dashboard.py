@@ -234,9 +234,10 @@ class WeatherDashboard(QMainWindow):
         self.feels_like_series.attachAxis(self.feels_like_x)
 
         self.feels_like_y = QValueAxis()
-        self.feels_like_y.setLabelsVisible(False)
         self.feels_like_y.setGridLineVisible(False)
         self.feels_like_y.setLineVisible(False)
+        self.feels_like_y.setLabelsFont(QFont("Stack", 10))
+        self.feels_like_y.setLabelsColor(QColor("#888888"))
 
         self.feels_like_chart.addAxis(self.feels_like_y, Qt.AlignmentFlag.AlignLeft)
         self.feels_like_series.attachAxis(self.feels_like_y)
@@ -262,7 +263,7 @@ class WeatherDashboard(QMainWindow):
         self.tooltip.setFont(QFont("Stack", 10))
         self.tooltip.setObjectName("tooltip")
         self.tooltip.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True)
-        self.tooltip.move(25, 0)
+        self.tooltip.move(40, 0)
         self.tooltip.hide()
 
         self.update_weather_data_display()
