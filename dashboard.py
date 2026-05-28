@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton
 from PySide6.QtCore import QDate, QSize, QMargins, QDateTime, QEvent;
 from PySide6.QtGui import QIcon, Qt, QFontDatabase, QFont, QPen, QColor;
-from PySide6.QtCharts import QChart, QSplineSeries, QChartView, QValueAxis, QDateTimeAxis;
+from PySide6.QtCharts import QChart, QSplineSeries, QChartView, QValueAxis, QDateTimeAxis, QScatterSeries;
 
 class WeatherDashboard(QMainWindow):
 
@@ -22,6 +22,9 @@ class WeatherDashboard(QMainWindow):
         closest_point = min(self.points, key= lambda point: abs(point[0].toMSecsSinceEpoch() - chart_position.x()))
         date_time, temperature = closest_point
 
+        self.hover_dot.clear()
+        self.hover_dot.append(date_time.toMSecsSinceEpoch(), temperature)
+
         time_string = date_time.toString("h:mm AP")
         self.tooltip.setText(f"{time_string} | {temperature}{self.units}")
         self.tooltip.adjustSize()
@@ -37,7 +40,6 @@ class WeatherDashboard(QMainWindow):
 
         for time, temperature in zip(times, temperatures):
             date_time = QDateTime.fromString(time, "yyyy-MM-ddTHH:mm")
-            
 
             if date_time.date() == date:
                 points.append((date_time, temperature))
@@ -237,8 +239,17 @@ class WeatherDashboard(QMainWindow):
 
         self.feels_like_chart.addAxis(self.feels_like_y, Qt.AlignmentFlag.AlignLeft)
         self.feels_like_series.attachAxis(self.feels_like_y)
+
+        self.hover_dot = QScatterSeries()
+        self.hover_dot.setMarkerSize(12)
+        self.hover_dot.setColor(QColor("#ffb55b"))
+        self.hover_dot.setPen(QColor("#ffb55b"))
+        self.feels_like_chart.addSeries(self.hover_dot)
+        self.hover_dot.attachAxis(self.feels_like_x)
+        self.hover_dot.attachAxis(self.feels_like_y)
         
         self.main_chart_view = QChartView(self.feels_like_chart)
+        self.main_chart_view.viewport().setCursor(Qt.CursorShape.PointingHandCursor)
         self.main_chart_view.setFixedHeight(200)
         self.main_chart_view.setMouseTracking(True)
         self.main_chart_view.viewport().setMouseTracking(True)
