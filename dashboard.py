@@ -2,6 +2,7 @@ from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QL
 from PySide6.QtCore import QDate, QSize, QMargins, QDateTime, QEvent;
 from PySide6.QtGui import QIcon, Qt, QFontDatabase, QFont, QPen, QColor;
 from PySide6.QtCharts import QChart, QSplineSeries, QChartView, QValueAxis, QDateTimeAxis, QScatterSeries, QLineSeries, QAreaSeries;
+from PySide6.QtSvgWidgets import QSvgWidget;
 
 class WeatherDashboard(QMainWindow):
 
@@ -93,9 +94,12 @@ class WeatherDashboard(QMainWindow):
                 self.current_temperature_label.setText(f"Temperature ({self.units}): {self.weather['current']['temperature_2m']}")
                 self.feels_like_label.setVisible(True)
                 self.feels_like_label.setText(f"Feels Like ({self.units}): {self.weather['current']['apparent_temperature']}")
+                self.weather_icon.load(self.weather_icon_mappings[f"{self.weather["current"]["weather_code"]}"]["day" if self.weather["current"]["is_day"] == 1 else "night"]["icon"])
+                self.weather_icon.setVisible(True)
             else:
                 self.current_temperature_label.setVisible(False)
                 self.feels_like_label.setVisible(False)
+                self.weather_icon.setVisible(False)
 
             self.daily_high_label.setText(f"High ({self.units}): {self.weather['daily']['temperature_2m_max'][self.currentDateIndex]}")
             self.daily_low_label.setText(f"Low ({self.units}): {self.weather['daily']['temperature_2m_min'][self.currentDateIndex]}")
@@ -133,9 +137,10 @@ class WeatherDashboard(QMainWindow):
             self.feels_like_high_label.setText(f"Feels Like High ({self.units}): {max_feels_like}")
             self.feels_like_low_label.setText(f"Feels Like Low ({self.units}): {min_feels_like}")
 
-    def __init__(self, settings, weather):
+    def __init__(self, settings, weather, weather_icon_mappings):
         self.settings = settings
         self.weather = weather
+        self.weather_icon_mappings = weather_icon_mappings
 
         super().__init__()
         self.resize(800, 450)
@@ -193,6 +198,9 @@ class WeatherDashboard(QMainWindow):
         layout.addSpacing(20)
 
         central_layout = QVBoxLayout()
+
+        self.weather_icon = WeatherIcon("icons/weather/night/sun.svg", 64)
+        self.weather_icon.setVisible(False)
 
         self.current_temperature_label = QLabel()
         self.daily_high_label = QLabel()
@@ -310,6 +318,8 @@ class WeatherDashboard(QMainWindow):
 
         self.update_weather_data_display()
 
+        central_layout.addWidget(self.weather_icon)
+
         central_layout.addWidget(self.current_temperature_label)
         central_layout.addWidget(self.daily_high_label)
         central_layout.addWidget(self.daily_low_label)
@@ -336,3 +346,8 @@ class WeatherDashboard(QMainWindow):
 
         with open("style.qss") as file:
             self.setStyleSheet(file.read())
+
+class WeatherIcon(QSvgWidget):
+    def __init__(self, path, size = 64):
+        super().__init__(path)
+        self.setFixedSize(size, size)

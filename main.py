@@ -7,6 +7,7 @@ from dashboard import WeatherDashboard
 
 SETTINGS_FILE = Path("settings.json")
 WEATHER_DATA_FILE = Path("weather.json")
+WEATHER_ICON_MAPPINGS_FILE = Path("weatherIconMappings.json")
 
 settings = load_data(SETTINGS_FILE)
 
@@ -27,7 +28,7 @@ if settings is None:
 
 app = QApplication(sys.argv)
 
-window = WeatherDashboard(settings = settings, weather = load_data(WEATHER_DATA_FILE))
+window = WeatherDashboard(settings = settings, weather = load_data(WEATHER_DATA_FILE), weather_icon_mappings = load_data(WEATHER_ICON_MAPPINGS_FILE))
 
 window.show()
 app.exec()
