@@ -53,7 +53,7 @@ class WeatherDashboard(QMainWindow):
         return points
 
     def update_date_display(self):
-        date_string = self.currentDate.toString("dddd, MMMM, d")
+        date_string = self.currentDate.toString("dddd, MMMM d")
 
         self.date_label.setText(date_string)
 
@@ -88,23 +88,21 @@ class WeatherDashboard(QMainWindow):
 
             self.units = self.weather['current_units']['temperature_2m']
             precipitation_units = self.weather['daily_units']['precipitation_sum']
+            if precipitation_units == "inch":
+                precipitation_units = "inches"
 
             if str(self.weather['daily']['time'][self.currentDateIndex]) == str(QDate.currentDate().toPython()):
-                self.current_temperature_label.setVisible(True)
-                self.current_temperature_label.setText(f"Temperature ({self.units}): {self.weather['current']['temperature_2m']}")
-                self.feels_like_label.setVisible(True)
-                self.feels_like_label.setText(f"Feels Like ({self.units}): {self.weather['current']['apparent_temperature']}")
+                self.temperature_label.setText(f"Current Temperature: {self.weather['current']['temperature_2m']}{self.units}")
+                self.feels_like_label.setText(f"Feels Like Temperature: {self.weather['current']['apparent_temperature']}{self.units} ()")
                 self.weather_icon.load(self.weather_icon_mappings[f"{self.weather["current"]["weather_code"]}"]["day" if self.weather["current"]["is_day"] == 1 else "night"]["icon"])
-                self.weather_icon.setVisible(True)
+                self.weather_label.setText(self.weather_icon_mappings[f"{self.weather["current"]["weather_code"]}"]["day" if self.weather["current"]["is_day"] == 1 else "night"]["description"])
             else:
-                self.current_temperature_label.setVisible(False)
-                self.feels_like_label.setVisible(False)
-                self.weather_icon.setVisible(False)
+                self.temperature_label.setText("Daily Avg")
+                self.feels_like_label.setText("Daily Avg")
+            self.precipitation_sum_label.setText(f"Estimated Precipitation: {self.weather['daily']['precipitation_sum'][self.currentDateIndex]} {precipitation_units}")
+            self.precipitation_chance_label.setText(f"Precipitation Chance: {self.weather['daily']['precipitation_probability_max'][self.currentDateIndex]}%")
 
-            self.daily_high_label.setText(f"High ({self.units}): {self.weather['daily']['temperature_2m_max'][self.currentDateIndex]}")
-            self.daily_low_label.setText(f"Low ({self.units}): {self.weather['daily']['temperature_2m_min'][self.currentDateIndex]}")
-            self.precipitation_sum_label.setText(f"Estimated Precipitation ({precipitation_units}): {self.weather['daily']['precipitation_sum'][self.currentDateIndex]}")
-            self.precipitation_chance_label.setText(f"Precipitation Chance (%): {self.weather['daily']['precipitation_probability_max'][self.currentDateIndex]}")
+            self.info_widget.setVisible(True)
 
             self.feels_like_series.clear()
 
@@ -134,9 +132,6 @@ class WeatherDashboard(QMainWindow):
             self.chart_min.setText(f"Low: {min_feels_like}{self.units}")
             self.chart_min_avg_max.setVisible(True)
 
-            self.feels_like_high_label.setText(f"Feels Like High ({self.units}): {max_feels_like}")
-            self.feels_like_low_label.setText(f"Feels Like Low ({self.units}): {min_feels_like}")
-
     def __init__(self, settings, weather, weather_icon_mappings):
         self.settings = settings
         self.weather = weather
@@ -145,9 +140,9 @@ class WeatherDashboard(QMainWindow):
         super().__init__()
         self.resize(800, 450)
 
-        centralWidget = QWidget()
-        centralWidget.setObjectName("centralWidget")
-        self.setCentralWidget(centralWidget)
+        central_widget = QWidget()
+        central_widget.setObjectName("centralWidget")
+        self.setCentralWidget(central_widget)
 
         QFontDatabase.addApplicationFont(
             "fonts/Stack.ttf"
@@ -197,21 +192,58 @@ class WeatherDashboard(QMainWindow):
         layout.addLayout(header_layout)
         layout.addSpacing(20)
 
-        central_layout = QVBoxLayout()
+        self.info_widget = QWidget()
+        self.info_widget.setObjectName("infoWidget")
 
-        self.weather_icon = WeatherIcon("icons/weather/night/sun.svg", 64)
-        self.weather_icon.setVisible(False)
+        info_layout = QHBoxLayout(self.info_widget)
 
-        self.current_temperature_label = QLabel()
-        self.daily_high_label = QLabel()
-        self.daily_low_label = QLabel()
+        self.weather_widget = QWidget()
+        self.weather_layout = QVBoxLayout(self.weather_widget)
+        self.weather_icon = WeatherIcon("icons/weather/day/sun.svg", 128)
+        self.weather_label = QLabel()
+        self.weather_layout.addWidget(self.weather_icon, alignment=Qt.AlignmentFlag.AlignCenter)
+        self.weather_layout.addWidget(self.weather_label, alignment=Qt.AlignmentFlag.AlignCenter)
 
+        info_layout.addWidget(self.weather_widget)
+
+        self.info_list_widget = QWidget()
+        self.info_list_layout = QVBoxLayout(self.info_list_widget)
+
+        self.temperature_main_widget = QWidget()
+        self.temperature_main_layout = QHBoxLayout(self.temperature_main_widget)
+
+        self.temperature_icon = WeatherIcon("icons/thermometer.svg", 64)
+        self.temperature_main_layout.addWidget(self.temperature_icon)
+
+        self.temperature_info_widget = QWidget()
+        self.temperature_info_layout = QVBoxLayout(self.temperature_info_widget)
+        self.temperature_label = QLabel()
         self.feels_like_label = QLabel()
-        self.feels_like_low_label = QLabel()
-        self.feels_like_high_label = QLabel()
+        self.temperature_info_layout.addWidget(self.temperature_label)
+        self.temperature_info_layout.addWidget(self.feels_like_label)
+        self.temperature_main_layout.addWidget(self.temperature_info_widget)
 
-        self.precipitation_sum_label = QLabel()
+        self.info_list_layout.addWidget(self.temperature_main_widget)
+
+        self.precipitation_main_widget = QWidget()
+        self.precipitation_main_layout = QHBoxLayout(self.precipitation_main_widget)
+
+        self.precipitation_icon = WeatherIcon("icons/rainDroplet.svg", 64)
+        self.precipitation_main_layout.addWidget(self.precipitation_icon)
+
+        self.precipitation_info_widget = QWidget()
+        self.precipitation_info_layout = QVBoxLayout(self.precipitation_info_widget)
         self.precipitation_chance_label = QLabel()
+        self.precipitation_sum_label = QLabel()
+        self.precipitation_info_layout.addWidget(self.precipitation_chance_label)
+        self.precipitation_info_layout.addWidget(self.precipitation_sum_label)
+        self.precipitation_main_layout.addWidget(self.precipitation_info_widget)
+
+        self.info_list_layout.addWidget(self.precipitation_main_widget)
+
+        info_layout.addWidget(self.info_list_widget)
+
+        self.info_widget.setVisible(False)
 
         self.chart = QWidget()
         self.chart.setObjectName("chart")
@@ -240,7 +272,7 @@ class WeatherDashboard(QMainWindow):
 
         self.chart_min_avg_max.setVisible(False)
 
-        self.main_chart_title = QLabel("Feels Like (\u00b0F)")
+        self.main_chart_title = QLabel("Feels Like Temperature (\u00b0F)")
         self.main_chart_title.setFont(QFont("Stack", 16))
 
         self.feels_like_pen = QPen(QColor("#ff8800"))
@@ -318,31 +350,18 @@ class WeatherDashboard(QMainWindow):
 
         self.update_weather_data_display()
 
-        central_layout.addWidget(self.weather_icon)
-
-        central_layout.addWidget(self.current_temperature_label)
-        central_layout.addWidget(self.daily_high_label)
-        central_layout.addWidget(self.daily_low_label)
-
-        central_layout.addWidget(self.feels_like_label)
-        central_layout.addWidget(self.feels_like_high_label)
-        central_layout.addWidget(self.feels_like_low_label)
-
-        central_layout.addWidget(self.precipitation_sum_label)
-        central_layout.addWidget(self.precipitation_chance_label)
-
         self.chart_layout.addWidget(self.main_chart_title)
         self.chart_layout.addWidget(self.main_chart_view)
 
         layout.addStretch()
-        layout.addLayout(central_layout)
+        layout.addWidget(self.info_widget)
         layout.addSpacing(20)
         layout.addStretch()
         layout.addWidget(self.chart)
         layout.addWidget(self.chart_min_avg_max)
         layout.addStretch()
 
-        centralWidget.setLayout(layout)
+        central_widget.setLayout(layout)
 
         with open("style.qss") as file:
             self.setStyleSheet(file.read())
