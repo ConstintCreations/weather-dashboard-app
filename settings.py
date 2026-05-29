@@ -3,7 +3,7 @@ from PySide6.QtWidgets import QApplication
 from storage import load_data
 from pathlib import Path
 
-from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QSlider;
+from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QSlider, QDoubleSpinBox;
 from PySide6.QtCore import QDate, QSize, QMargins, QDateTime, QEvent, QThread, QTimer;
 from PySide6.QtGui import QIcon, Qt, QFontDatabase, QFont, QPen, QColor;
 from PySide6.QtCharts import QChart, QSplineSeries, QChartView, QValueAxis, QDateTimeAxis, QScatterSeries, QLineSeries, QAreaSeries;
@@ -32,6 +32,38 @@ class Settings(QMainWindow):
 
         layout.addStretch()
 
+        self.location_widget = QWidget()
+        self.location_layout = QVBoxLayout(self.location_widget)
+        self.location_label = QLabel("Location", alignment = Qt.AlignmentFlag.AlignCenter)
+        self.location_label.setFont(QFont("Stack", 16))
+        self.location_layout.addWidget(self.location_label)
+        self.latitude_edit_widget = QWidget()
+        self.latitude_edit_layout = QHBoxLayout(self.latitude_edit_widget)
+        self.latitude_label = QLabel("Latitude: ", alignment = Qt.AlignmentFlag.AlignLeft)
+        self.latitude_label.setFont(QFont("Stack", 12))
+        self.latitude_spinbox = QDoubleSpinBox()
+        self.latitude_spinbox.setFont(QFont("Stack", 12))
+        self.latitude_spinbox.setRange(-90, 90)
+        self.latitude_spinbox.setDecimals(4)
+        self.latitude_spinbox.setFixedWidth(140)
+        self.latitude_spinbox.setValue(self.settings["latitude"])
+        self.latitude_edit_layout.addWidget(self.latitude_label)
+        self.latitude_edit_layout.addWidget(self.latitude_spinbox)
+        self.longitude_edit_widget = QWidget()
+        self.longitude_edit_layout = QHBoxLayout(self.longitude_edit_widget)
+        self.longitude_label = QLabel("Longitude: ", alignment = Qt.AlignmentFlag.AlignLeft)
+        self.longitude_label.setFont(QFont("Stack", 12))
+        self.longitude_spinbox = QDoubleSpinBox()
+        self.longitude_spinbox.setFont(QFont("Stack", 12))
+        self.longitude_spinbox.setRange(-180, 180)
+        self.longitude_spinbox.setDecimals(4)
+        self.longitude_spinbox.setFixedWidth(140)
+        self.longitude_spinbox.setValue(self.settings["longitude"])
+        self.longitude_edit_layout.addWidget(self.longitude_label)
+        self.longitude_edit_layout.addWidget(self.longitude_spinbox)
+        self.location_layout.addWidget(self.latitude_edit_widget)
+        self.location_layout.addWidget(self.longitude_edit_widget)
+
         self.temperature_units_widget = QWidget()
         self.temperature_units_layout = QVBoxLayout(self.temperature_units_widget)
         self.temperature_units_label = QLabel("Temperature Units", alignment = Qt.AlignmentFlag.AlignCenter)
@@ -50,11 +82,11 @@ class Settings(QMainWindow):
             self.temperature_units_slider.setValue(1)
         else:    
             self.temperature_units_slider.setValue(0)
-        self.temperature_units_edit_layout.addStretch()
+        self.temperature_units_edit_layout.addSpacing(50)
         self.temperature_units_edit_layout.addWidget(self.temperature_units_celsius_label)
         self.temperature_units_edit_layout.addWidget(self.temperature_units_slider)
         self.temperature_units_edit_layout.addWidget(self.temperature_units_fahrenheit_label)
-        self.temperature_units_edit_layout.addStretch()
+        self.temperature_units_edit_layout.addSpacing(50)
         self.temperature_units_layout.addWidget(self.temperature_units_edit_widget)
 
         self.precipitation_units_widget = QWidget()
@@ -75,13 +107,14 @@ class Settings(QMainWindow):
             self.precipitation_units_slider.setValue(1)
         else:    
             self.precipitation_units_slider.setValue(0)
-        self.precipitation_units_edit_layout.addStretch()
+        self.precipitation_units_edit_layout.addSpacing(50)
         self.precipitation_units_edit_layout.addWidget(self.precipitation_units_mm_label)
         self.precipitation_units_edit_layout.addWidget(self.precipitation_units_slider)
         self.precipitation_units_edit_layout.addWidget(self.precipitation_units_inch_label)
-        self.precipitation_units_edit_layout.addStretch()
+        self.precipitation_units_edit_layout.addSpacing(50)
         self.precipitation_units_layout.addWidget(self.precipitation_units_edit_widget)
         
+        layout.addWidget(self.location_widget)
         layout.addWidget(self.temperature_units_widget)
         layout.addWidget(self.precipitation_units_widget)
         layout.addStretch()
