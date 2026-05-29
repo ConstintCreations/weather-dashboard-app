@@ -47,3 +47,7 @@ QLabel#tooltip {
     margin: 10px;
     padding: 6px;
 }
+
+#feelsLikeLabel {
+    color: #b6b6b6;
+}

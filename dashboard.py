@@ -21,7 +21,7 @@ class WeatherDashboard(QMainWindow):
     
     def chart_hover(self, position):
         chart_position = self.feels_like_chart.mapToValue(position)
-        closest_point = min(self.points, key= lambda point: abs(point[0].toMSecsSinceEpoch() - chart_position.x()))
+        closest_point = min(self.feels_like_points, key= lambda point: abs(point[0].toMSecsSinceEpoch() - chart_position.x()))
         date_time, temperature = closest_point
 
         self.hover_dot.clear()
@@ -92,38 +92,36 @@ class WeatherDashboard(QMainWindow):
                 precipitation_units = "inches"
 
             if str(self.weather['daily']['time'][self.currentDateIndex]) == str(QDate.currentDate().toPython()):
-                self.temperature_label.setText(f"Current Temperature: {self.weather['current']['temperature_2m']}{self.units}")
-                self.feels_like_label.setText(f"Feels Like Temperature: {self.weather['current']['apparent_temperature']}{self.units} ()")
+                self.temperature_label.setText(f"{self.weather['current']['temperature_2m']}{self.units}")
+                self.feels_like_label.setText(f"Feels Like {self.weather['current']['apparent_temperature']}{self.units}")
                 self.weather_icon.load(self.weather_icon_mappings[f"{self.weather["current"]["weather_code"]}"]["day" if self.weather["current"]["is_day"] == 1 else "night"]["icon"])
                 self.weather_label.setText(self.weather_icon_mappings[f"{self.weather["current"]["weather_code"]}"]["day" if self.weather["current"]["is_day"] == 1 else "night"]["description"])
-            else:
-                self.temperature_label.setText("Daily Avg")
-                self.feels_like_label.setText("Daily Avg")
-            self.precipitation_sum_label.setText(f"Estimated Precipitation: {self.weather['daily']['precipitation_sum'][self.currentDateIndex]} {precipitation_units}")
-            self.precipitation_chance_label.setText(f"Precipitation Chance: {self.weather['daily']['precipitation_probability_max'][self.currentDateIndex]}%")
+            
+            self.precipitation_chance_sum_label.setText(f"{self.weather['daily']['precipitation_probability_max'][self.currentDateIndex]}% | {round(self.weather['daily']['precipitation_sum'][self.currentDateIndex], 2)} {precipitation_units}")
+            self.sun_label.setText(f"{QDateTime.fromString(self.weather['daily']['sunrise'][self.currentDateIndex], "yyyy-MM-ddTHH:mm").toString("h:mm AP")} - {QDateTime.fromString(self.weather['daily']['sunset'][self.currentDateIndex], "yyyy-MM-ddTHH:mm").toString("h:mm AP")}")
 
             self.info_widget.setVisible(True)
 
             self.feels_like_series.clear()
 
-            self.points = self.get_hourly_data(self.currentDate, "apparent_temperature")
+            self.feels_like_points = self.get_hourly_data(self.currentDate, "apparent_temperature")
             
-            if not(self.points):
+            if not(self.feels_like_points):
                 self.chart.setVisible(False)
                 return
             
-            for date_time, temperature in self.points:
+            for date_time, temperature in self.feels_like_points:
                 self.feels_like_series.append(date_time.toMSecsSinceEpoch(), temperature)
 
-            self.feels_like_x.setRange(self.points[0][0], self.points[-1][0])
-            min_feels_like = min(self.points, key= lambda point: point[1])[1]
-            max_feels_like = max(self.points, key= lambda point: point[1])[1]
+            self.feels_like_x.setRange(self.feels_like_points[0][0], self.feels_like_points[-1][0])
+            min_feels_like = min(self.feels_like_points, key= lambda point: point[1])[1]
+            max_feels_like = max(self.feels_like_points, key= lambda point: point[1])[1]
             gap = (max_feels_like - min_feels_like) * 0.1
             self.feels_like_y.setRange(min_feels_like - gap, max_feels_like + gap)
 
             self.line_series.clear()
-            self.line_series.append(self.points[0][0].toMSecsSinceEpoch(), 0)
-            self.line_series.append(self.points[-1][0].toMSecsSinceEpoch(), 0)
+            self.line_series.append(self.feels_like_points[0][0].toMSecsSinceEpoch(), 0)
+            self.line_series.append(self.feels_like_points[-1][0].toMSecsSinceEpoch(), 0)
             self.chart.setVisible(True)
             self.tooltip.hide()
 
@@ -131,6 +129,20 @@ class WeatherDashboard(QMainWindow):
             self.chart_avg.setText(f"Avg: {round((max_feels_like+min_feels_like)/2, 1)}{self.units}")
             self.chart_min.setText(f"Low: {min_feels_like}{self.units}")
             self.chart_min_avg_max.setVisible(True)
+
+            self.temperature_points = self.get_hourly_data(self.currentDate, "temperature_2m")
+            if not(self.temperature_points):
+                return
+            
+            min_temperature = min(self.temperature_points, key= lambda point: point[1])[1]
+            max_temperature = max(self.temperature_points, key= lambda point: point[1])[1]
+
+            if not(str(self.weather['daily']['time'][self.currentDateIndex]) == str(QDate.currentDate().toPython())):
+                self.feels_like_label.setText(f"(Avg) Feels Like {round((max_feels_like+min_feels_like)/2, 1)}{self.units}")
+                self.temperature_label.setText(f"(Avg) {round((max_temperature+min_temperature)/2, 1)}{self.units}") 
+                self.weather_icon.load(self.weather_icon_mappings[f"{self.weather["daily"]["weather_code"][self.currentDateIndex]}"]["day"]["icon"])
+                self.weather_label.setText(self.weather_icon_mappings[f"{self.weather["daily"]["weather_code"][self.currentDateIndex]}"]["day"]["description"])           
+
 
     def __init__(self, settings, weather, weather_icon_mappings):
         self.settings = settings
@@ -196,52 +208,97 @@ class WeatherDashboard(QMainWindow):
         self.info_widget.setObjectName("infoWidget")
 
         info_layout = QHBoxLayout(self.info_widget)
+        info_layout.addStretch()
 
         self.weather_widget = QWidget()
         self.weather_layout = QVBoxLayout(self.weather_widget)
         self.weather_icon = WeatherIcon("icons/weather/day/sun.svg", 128)
         self.weather_label = QLabel()
+        self.weather_label.setFont(QFont("Stack", 16))
         self.weather_layout.addWidget(self.weather_icon, alignment=Qt.AlignmentFlag.AlignCenter)
+        self.weather_layout.addSpacing(5)
         self.weather_layout.addWidget(self.weather_label, alignment=Qt.AlignmentFlag.AlignCenter)
 
         info_layout.addWidget(self.weather_widget)
 
-        self.info_list_widget = QWidget()
-        self.info_list_layout = QVBoxLayout(self.info_list_widget)
+        self.left_info_list_widget = QWidget()
+        self.left_info_list_layout = QVBoxLayout(self.left_info_list_widget)
 
         self.temperature_main_widget = QWidget()
         self.temperature_main_layout = QHBoxLayout(self.temperature_main_widget)
 
-        self.temperature_icon = WeatherIcon("icons/thermometer.svg", 64)
+        self.temperature_icon = WeatherIcon("icons/thermometer.svg", 48)
         self.temperature_main_layout.addWidget(self.temperature_icon)
 
         self.temperature_info_widget = QWidget()
         self.temperature_info_layout = QVBoxLayout(self.temperature_info_widget)
         self.temperature_label = QLabel()
+        self.temperature_label.setFont(QFont("Stack", 12))
         self.feels_like_label = QLabel()
+        self.feels_like_label.setObjectName("feelsLikeLabel")
+        self.feels_like_label.setFont(QFont("Stack", 10))
         self.temperature_info_layout.addWidget(self.temperature_label)
         self.temperature_info_layout.addWidget(self.feels_like_label)
         self.temperature_main_layout.addWidget(self.temperature_info_widget)
 
-        self.info_list_layout.addWidget(self.temperature_main_widget)
+        self.left_info_list_layout.addWidget(self.temperature_main_widget)
+        self.left_info_list_layout.addStretch()
 
         self.precipitation_main_widget = QWidget()
         self.precipitation_main_layout = QHBoxLayout(self.precipitation_main_widget)
 
-        self.precipitation_icon = WeatherIcon("icons/rainDroplet.svg", 64)
+        self.precipitation_icon = WeatherIcon("icons/rainDroplet.svg", 48)
         self.precipitation_main_layout.addWidget(self.precipitation_icon)
 
         self.precipitation_info_widget = QWidget()
         self.precipitation_info_layout = QVBoxLayout(self.precipitation_info_widget)
-        self.precipitation_chance_label = QLabel()
-        self.precipitation_sum_label = QLabel()
-        self.precipitation_info_layout.addWidget(self.precipitation_chance_label)
-        self.precipitation_info_layout.addWidget(self.precipitation_sum_label)
+        self.precipitation_chance_sum_label = QLabel()
+        self.precipitation_chance_sum_label.setFont(QFont("Stack", 12))
+        self.precipitation_info_layout.addWidget(self.precipitation_chance_sum_label)
         self.precipitation_main_layout.addWidget(self.precipitation_info_widget)
 
-        self.info_list_layout.addWidget(self.precipitation_main_widget)
+        self.left_info_list_layout.addWidget(self.precipitation_main_widget)
 
-        info_layout.addWidget(self.info_list_widget)
+        info_layout.addSpacing(20)
+        info_layout.addWidget(self.left_info_list_widget)
+        info_layout.addSpacing(20)
+
+        self.right_info_list_widget = QWidget()
+        self.right_info_list_layout = QVBoxLayout(self.right_info_list_widget)
+
+        self.sun_main_widget = QWidget()
+        self.sun_main_layout = QHBoxLayout(self.sun_main_widget)
+
+        self.sun_icon = WeatherIcon("icons/sunriseSquare.svg", 48)
+        self.sun_main_layout.addWidget(self.sun_icon)
+
+        self.sun_info_widget = QWidget()
+        self.sun_info_layout = QVBoxLayout(self.sun_info_widget)
+        self.sun_label = QLabel()
+        self.sun_label.setFont(QFont("Stack", 12))
+        self.sun_info_layout.addWidget(self.sun_label)
+        self.sun_main_layout.addWidget(self.sun_info_widget)
+
+        self.right_info_list_layout.addWidget(self.sun_main_widget)
+        self.right_info_list_layout.addStretch()
+
+        self.apparel_main_widget = QWidget()
+        self.apparel_main_layout = QHBoxLayout(self.apparel_main_widget)
+
+        self.apparel_icon = WeatherIcon("icons/hangerSquare.svg", 48)
+        self.apparel_main_layout.addWidget(self.apparel_icon)
+
+        self.apparel_info_widget = QWidget()
+        self.apparel_info_layout = QVBoxLayout(self.apparel_info_widget)
+        self.apparel_label = QLabel()
+        self.apparel_label.setFont(QFont("Stack", 12))
+        self.apparel_info_layout.addWidget(self.apparel_label)
+        self.apparel_main_layout.addWidget(self.apparel_info_widget)
+
+        self.right_info_list_layout.addWidget(self.apparel_main_widget)
+        info_layout.addWidget(self.right_info_list_widget)
+
+        info_layout.addStretch()
 
         self.info_widget.setVisible(False)
 

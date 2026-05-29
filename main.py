@@ -22,8 +22,8 @@ if settings is None:
             "timezone": ""
         }
 
-# weather = get_weather(settings)
-# save_data(weather, WEATHER_DATA_FILE)
+weather = get_weather(settings)
+save_data(weather, WEATHER_DATA_FILE)
 
 
 app = QApplication(sys.argv)
