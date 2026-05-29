@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton
+from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton;
 from PySide6.QtCore import QDate, QSize, QMargins, QDateTime, QEvent, QThread, QTimer;
 from PySide6.QtGui import QIcon, Qt, QFontDatabase, QFont, QPen, QColor;
 from PySide6.QtCharts import QChart, QSplineSeries, QChartView, QValueAxis, QDateTimeAxis, QScatterSeries, QLineSeries, QAreaSeries;
@@ -131,7 +131,9 @@ class WeatherDashboard(QMainWindow):
             self.units = self.weather['current_units']['temperature_2m']
             precipitation_units = self.weather['daily_units']['precipitation_sum']
             if precipitation_units == "inch":
-                precipitation_units = "inches"
+                precipitation_units = "in."
+            else:
+                precipitation_units = "mm"
 
             if str(self.weather['daily']['time'][self.currentDateIndex]) == str(QDate.currentDate().toPython()):
                 self.temperature_label.setText(f"{self.weather['current']['temperature_2m']}{self.units}")
