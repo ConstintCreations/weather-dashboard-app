@@ -4,10 +4,7 @@ from storage import load_data
 from pathlib import Path
 
 from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QSlider, QDoubleSpinBox;
-from PySide6.QtCore import QDate, QSize, QMargins, QDateTime, QEvent, QThread, QTimer;
-from PySide6.QtGui import QIcon, Qt, QFontDatabase, QFont, QPen, QColor;
-from PySide6.QtCharts import QChart, QSplineSeries, QChartView, QValueAxis, QDateTimeAxis, QScatterSeries, QLineSeries, QAreaSeries;
-from PySide6.QtSvgWidgets import QSvgWidget;
+from PySide6.QtGui import Qt, QFontDatabase, QFont;
 
 class Settings(QMainWindow):
     def __init__(self, settings):
@@ -113,10 +110,17 @@ class Settings(QMainWindow):
         self.precipitation_units_edit_layout.addWidget(self.precipitation_units_inch_label)
         self.precipitation_units_edit_layout.addSpacing(50)
         self.precipitation_units_layout.addWidget(self.precipitation_units_edit_widget)
+
+        self.apparel_widget = QWidget()
+        self.apparel_layout = QVBoxLayout(self.apparel_widget)
+        self.apparel_label = QLabel("Apparel", alignment = Qt.AlignmentFlag.AlignCenter)
+        self.apparel_label.setFont(QFont("Stack", 16))
+        self.apparel_layout.addWidget(self.apparel_label)
         
         layout.addWidget(self.location_widget)
         layout.addWidget(self.temperature_units_widget)
         layout.addWidget(self.precipitation_units_widget)
+        layout.addWidget(self.apparel_widget)
         layout.addStretch()
 
         central_widget.setLayout(layout)

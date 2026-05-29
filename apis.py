@@ -13,7 +13,7 @@ def get_location():
         return None
     
 def get_weather(settings, timeout=30):
-    return requests.get(f"https://api.open-meteo.com/v1/forecast?latitude={settings['latitude']}&longitude={settings['longitude']}&daily=temperature_2m_max,temperature_2m_min,sunset,sunrise,precipitation_sum,precipitation_probability_max,weather_code&current=apparent_temperature,temperature_2m,is_day,weather_code&hourly=temperature_2m,apparent_temperature&timezone={settings['timezone']}&past_days=7&forecast_days=16&temperature_unit={settings['temperature_units']}&precipitation_unit={settings['precipitation_units']}", timeout=timeout).json()
+    return requests.get(f"https://api.open-meteo.com/v1/forecast?latitude={settings['latitude']}&longitude={settings['longitude']}&daily=temperature_2m_max,temperature_2m_min,sunset,sunrise,precipitation_sum,precipitation_probability_max,weather_code&current=apparent_temperature,temperature_2m,is_day,weather_code&hourly=temperature_2m,apparent_temperature&timezone=auto&past_days=7&forecast_days=16&temperature_unit={settings['temperature_units']}&precipitation_unit={settings['precipitation_units']}", timeout=timeout).json()
 
 class WeatherWorker(QObject):
     finished = Signal(dict)
