@@ -72,14 +72,14 @@ class WeatherDashboard(QMainWindow):
                 self.left_date_button.setIcon(QIcon())
 
     def next_date(self):
-        if (self.currentDateIndex + 1) <= 20:
+        if (self.currentDateIndex + 1) <= 21:
             self.currentDateIndex += 1
             self.currentDate = self.currentDate.addDays(1)
             self.update_date_display()
             self.update_weather_data_display()
             self.left_date_button.setEnabled(True)
             self.left_date_button.setIcon(QIcon("icons/leftArrow.svg"))
-            if self.currentDateIndex == 20:
+            if self.currentDateIndex == 21:
                 self.right_date_button.setEnabled(False)
                 self.right_date_button.setIcon(QIcon())
 
@@ -89,7 +89,13 @@ class WeatherDashboard(QMainWindow):
 
     def set_actual_temperature_chart(self):
         self.isFeelsLikeChart = False
-        self.update_weather_data_display()            
+        self.update_weather_data_display()  
+
+    def get_apparel(self, feels_like_temperature):
+        for item in self.settings["apparel"]:
+            if item["min"] <= feels_like_temperature and feels_like_temperature < item["max"]:
+                return item["recommendation"]
+        return "Unknown"
 
     def update_weather_data_display(self):
         if not(self.weather is None):
@@ -161,6 +167,8 @@ class WeatherDashboard(QMainWindow):
             self.chart_avg.setText(f"Avg: {round((max_chart+min_chart)/2, 1)}{self.units}")
             self.chart_min.setText(f"Low: {min_chart}{self.units}")
             self.chart_min_avg_max.setVisible(True)
+
+            self.apparel_label.setText(self.get_apparel(round((max_feels_like+min_feels_like)/2, 1)))
 
             if not(str(self.weather['daily']['time'][self.currentDateIndex]) == str(QDate.currentDate().toPython())):
                 self.feels_like_label.setText(f"(Avg) Feels Like {round((max_feels_like+min_feels_like)/2, 1)}{self.units}")

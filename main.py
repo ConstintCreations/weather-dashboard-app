@@ -14,12 +14,60 @@ settings = load_data(SETTINGS_FILE)
 if settings is None:
     settings = get_location()
     if not(settings is None):
+        settings["apparel"] = [
+            {
+                "min": -1000,
+                "max": 20,
+                "recommendation": "Coat"
+            },
+            {
+                "min": 20,
+                "max": 45,
+                "recommendation": "Jacket"
+            },
+            {
+                "min": 45,
+                "max": 65,
+                "recommendation": "Long-Sleeve Shirt"
+            },
+            {
+                "min": 65,
+                "max": 1000,
+                "recommendation": "T-Shirt"
+            }
+        ]
+        settings["temperature_units"] = "fahrenheit"
+        settings["precipitation_units"] = "inch"
         save_data(settings, SETTINGS_FILE)
     else:
         settings = {
             "longitude": 0,
             "latitude": 0,
-            "timezone": ""
+            "timezone": "",
+            "temperature_units": "fahrenheit",
+            "precipitation_units": "inch",
+            "apparel": [
+                {
+                    "min": -1000,
+                    "max": 20,
+                    "recommendation": "Coat"
+                },
+                {
+                    "min": 20,
+                    "max": 45,
+                    "recommendation": "Jacket"
+                },
+                {
+                    "min": 45,
+                    "max": 65,
+                    "recommendation": "Long-Sleeve Shirt"
+                },
+                {
+                    "min": 65,
+                    "max": 1000,
+                    "recommendation": "T-Shirt"
+                }
+            ]
         }
 
 # weather = get_weather(settings)
