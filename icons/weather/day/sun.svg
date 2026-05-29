@@ -1,63 +1,19 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
-<svg
-   width="189.99995mm"
-   height="189.99998mm"
-   viewBox="0 0 189.99995 189.99998"
-   version="1.1"
-   id="svg1"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:svg="http://www.w3.org/2000/svg">
-  <defs
-     id="defs1" />
-  <g
-     id="layer1"
-     transform="translate(-5,-55)">
-    <circle
-       style="fill:#ffd42a;stroke:#ffd42a;stroke-width:3;stroke-linecap:round;stroke-opacity:1"
-       id="path1"
-       cx="100"
-       cy="150"
-       r="48.5" />
-    <g
-       id="g2">
-      <path
-         style="fill:#ffd42a;stroke:#ffd42a;stroke-width:8;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
-         d="M 99.999997,59 V 90.999972"
-         id="path2" />
-      <path
-         style="fill:#ffd42a;stroke:#ffd42a;stroke-width:8;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
-         d="m 100,209 v 31.99997"
-         id="path2-3" />
-      <path
-         style="fill:#ffd42a;stroke:#ffd42a;stroke-width:8;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
-         d="m 159,150 h 31.99997"
-         id="path2-3-6" />
-      <path
-         style="fill:#ffd42a;stroke:#ffd42a;stroke-width:8;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
-         d="M 9,150 H 40.99997"
-         id="path2-3-6-2" />
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="189.99995mm" height="189.99998mm" viewBox="-1.499999999055035e-05 0.0 189.99998 189.99998" version="1.1" id="svg1">
+  <defs id="defs1" />
+  <g id="layer1" transform="translate(-5,-55)">
+    <circle style="fill:#ffd42a;stroke:#ffd42a;stroke-width:3;stroke-linecap:round;stroke-opacity:1" id="path1" cx="100" cy="150" r="48.5" />
+    <g id="g2">
+      <path style="fill:#ffd42a;stroke:#ffd42a;stroke-width:8;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1" d="M 99.999997,59 V 90.999972" id="path2" />
+      <path style="fill:#ffd42a;stroke:#ffd42a;stroke-width:8;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1" d="m 100,209 v 31.99997" id="path2-3" />
+      <path style="fill:#ffd42a;stroke:#ffd42a;stroke-width:8;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1" d="m 159,150 h 31.99997" id="path2-3-6" />
+      <path style="fill:#ffd42a;stroke:#ffd42a;stroke-width:8;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1" d="M 9,150 H 40.99997" id="path2-3-6-2" />
     </g>
-    <g
-       id="g2-5"
-       transform="rotate(45,99.999985,149.99998)">
-      <path
-         style="fill:#ffd42a;stroke:#ffd42a;stroke-width:8;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
-         d="M 99.999997,59 V 90.999972"
-         id="path2-9" />
-      <path
-         style="fill:#ffd42a;stroke:#ffd42a;stroke-width:8;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
-         d="m 100,209 v 31.99997"
-         id="path2-3-2" />
-      <path
-         style="fill:#ffd42a;stroke:#ffd42a;stroke-width:8;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
-         d="m 159,150 h 31.99997"
-         id="path2-3-6-28" />
-      <path
-         style="fill:#ffd42a;stroke:#ffd42a;stroke-width:8;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
-         d="M 9,150 H 40.99997"
-         id="path2-3-6-2-9" />
+    <g id="g2-5" transform="rotate(45,99.999985,149.99998)">
+      <path style="fill:#ffd42a;stroke:#ffd42a;stroke-width:8;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1" d="M 99.999997,59 V 90.999972" id="path2-9" />
+      <path style="fill:#ffd42a;stroke:#ffd42a;stroke-width:8;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1" d="m 100,209 v 31.99997" id="path2-3-2" />
+      <path style="fill:#ffd42a;stroke:#ffd42a;stroke-width:8;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1" d="m 159,150 h 31.99997" id="path2-3-6-28" />
+      <path style="fill:#ffd42a;stroke:#ffd42a;stroke-width:8;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1" d="M 9,150 H 40.99997" id="path2-3-6-2-9" />
     </g>
   </g>
 </svg>

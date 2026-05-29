@@ -1,62 +1,15 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
-<svg
-   width="148.29205mm"
-   height="84.994965mm"
-   viewBox="0 0 148.29205 84.994965"
-   version="1.1"
-   id="svg1"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:svg="http://www.w3.org/2000/svg">
-  <defs
-     id="defs1" />
-  <g
-     id="layer1"
-     transform="translate(-30.853965,-106.00251)">
-    <g
-       id="g3"
-       style="fill:#dbdee3"
-       transform="translate(7.5667629,13.123849)">
-      <circle
-         style="fill:#dbdee3;stroke-width:7.99999;stroke-linecap:round"
-         id="path1"
-         cx="49.688789"
-         cy="151.47205"
-         r="26.401585" />
-      <g
-         id="g2"
-         style="fill:#dbdee3">
-        <rect
-           style="fill:#dbdee3;stroke-width:7.99999;stroke-linecap:round"
-           id="rect1"
-           width="133.15854"
-           height="43.127945"
-           x="38.420731"
-           y="134.74568"
-           ry="21.563972"
-           rx="18.416798" />
-        <circle
-           style="fill:#dbdee3;stroke-width:7.99999;stroke-linecap:round"
-           id="path1-2"
-           cx="91.279678"
-           cy="123.21307"
-           r="30.334402" />
-        <circle
-           style="fill:#dbdee3;stroke-width:7.99997;stroke-linecap:round"
-           id="path1-2-4"
-           cx="131.64046"
-           cy="131.35643"
-           r="23.905502" />
-        <rect
-           style="fill:#dbdee3;stroke-width:7.99999;stroke-linecap:round"
-           id="rect2"
-           width="37.669643"
-           height="26.401579"
-           x="49.688789"
-           y="151.47205"
-           rx="0"
-           ry="0" />
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:ns1="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:ns2="http://www.inkscape.org/namespaces/inkscape" width="148.29205mm" height="84.994965mm" viewBox="0.0 -31.648542499999998 148.29205 148.29205" version="1.1" id="svg1" ns1:docname="cloud.svg" ns2:export-filename="cloud.svg" ns2:export-xdpi="96" ns2:export-ydpi="96" ns2:version="1.4.4 (dcaf3e7d9e, 2026-05-05)">
+  <ns1:namedview id="namedview1" pagecolor="#505050" bordercolor="#ffffff" borderopacity="1" ns2:showpageshadow="0" ns2:pageopacity="0" ns2:pagecheckerboard="1" ns2:deskcolor="#505050" ns2:document-units="mm" ns2:zoom="1.0522245" ns2:cx="246.62037" ns2:cy="220.96045" ns2:window-width="1536" ns2:window-height="888" ns2:window-x="0" ns2:window-y="0" ns2:window-maximized="1" ns2:current-layer="svg1" />
+  <defs id="defs1" />
+  <g id="layer1" transform="translate(-30.853965,-106.00251)">
+    <g id="g3" style="fill:#dbdee3" transform="translate(7.5667629,13.123849)">
+      <circle style="fill:#dbdee3;stroke-width:7.99999;stroke-linecap:round" id="path1" cx="49.688789" cy="151.47205" r="26.401585" />
+      <g id="g2" style="fill:#dbdee3">
+        <rect style="fill:#dbdee3;stroke-width:7.99999;stroke-linecap:round" id="rect1" width="133.15854" height="43.127945" x="38.420731" y="134.74568" ry="21.563972" rx="18.416798" />
+        <circle style="fill:#dbdee3;stroke-width:7.99999;stroke-linecap:round" id="path1-2" cx="91.279678" cy="123.21307" r="30.334402" />
+        <circle style="fill:#dbdee3;stroke-width:7.99997;stroke-linecap:round" id="path1-2-4" cx="131.64046" cy="131.35643" r="23.905502" />
+        <rect style="fill:#dbdee3;stroke-width:7.99999;stroke-linecap:round" id="rect2" width="37.669643" height="26.401579" x="49.688789" y="151.47205" rx="0" ry="0" />
       </g>
     </g>
   </g>
