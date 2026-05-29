@@ -37,7 +37,6 @@ class Settings(QMainWindow):
         self.temperature_units_label = QLabel("Temperature Units", alignment = Qt.AlignmentFlag.AlignCenter)
         self.temperature_units_label.setFont(QFont("Stack", 16))
         self.temperature_units_layout.addWidget(self.temperature_units_label)
-
         self.temperature_units_edit_widget = QWidget()
         self.temperature_units_edit_layout = QHBoxLayout(self.temperature_units_edit_widget)
         self.temperature_units_celsius_label = QLabel("\u00b0C")
@@ -58,8 +57,33 @@ class Settings(QMainWindow):
         self.temperature_units_edit_layout.addStretch()
         self.temperature_units_layout.addWidget(self.temperature_units_edit_widget)
 
-        layout.addWidget(self.temperature_units_widget)
+        self.precipitation_units_widget = QWidget()
+        self.precipitation_units_layout = QVBoxLayout(self.precipitation_units_widget)
+        self.precipitation_units_label = QLabel("Precipitation Units", alignment = Qt.AlignmentFlag.AlignCenter)
+        self.precipitation_units_label.setFont(QFont("Stack", 16))
+        self.precipitation_units_layout.addWidget(self.precipitation_units_label)
+        self.precipitation_units_edit_widget = QWidget()
+        self.precipitation_units_edit_layout = QHBoxLayout(self.precipitation_units_edit_widget)
+        self.precipitation_units_mm_label = QLabel("mm")
+        self.precipitation_units_mm_label.setFont(QFont("Stack", 12))
+        self.precipitation_units_inch_label = QLabel("in.")
+        self.precipitation_units_inch_label.setFont(QFont("Stack", 12))
+        self.precipitation_units_slider = QSlider(Qt.Horizontal)
+        self.precipitation_units_slider.setTickInterval(1)
+        self.precipitation_units_slider.setRange(0, 1)
+        if self.settings["precipitation_units"] == "inch":
+            self.precipitation_units_slider.setValue(1)
+        else:    
+            self.precipitation_units_slider.setValue(0)
+        self.precipitation_units_edit_layout.addStretch()
+        self.precipitation_units_edit_layout.addWidget(self.precipitation_units_mm_label)
+        self.precipitation_units_edit_layout.addWidget(self.precipitation_units_slider)
+        self.precipitation_units_edit_layout.addWidget(self.precipitation_units_inch_label)
+        self.precipitation_units_edit_layout.addStretch()
+        self.precipitation_units_layout.addWidget(self.precipitation_units_edit_widget)
         
+        layout.addWidget(self.temperature_units_widget)
+        layout.addWidget(self.precipitation_units_widget)
         layout.addStretch()
 
         central_widget.setLayout(layout)
