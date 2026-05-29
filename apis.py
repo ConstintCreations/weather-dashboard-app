@@ -6,8 +6,7 @@ def get_location():
         data = requests.get("https://ipapi.co/json", timeout=5).json()
         return {
             "longitude": data["longitude"],
-            "latitude": data["latitude"],
-            "timezone": data["timezone"]
+            "latitude": data["latitude"]
         }
     
     except Exception:

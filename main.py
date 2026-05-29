@@ -15,6 +15,7 @@ settings = load_data(SETTINGS_FILE)
 if settings is None:
     settings = get_location()
     if not(settings is None):
+        settings["timezone"] = "auto"
         settings["apparel"] = [
             {
                 "min": -1000,
@@ -42,9 +43,9 @@ if settings is None:
         save_data(settings, SETTINGS_FILE)
     else:
         settings = {
-            "longitude": 0,
-            "latitude": 0,
-            "timezone": "",
+            "longitude": -87.65,
+            "latitude": 41.85,
+            "timezone": "auto",
             "temperature_units": "fahrenheit",
             "precipitation_units": "inch",
             "apparel": [
