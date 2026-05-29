@@ -1,10 +1,38 @@
 from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton
-from PySide6.QtCore import QDate, QSize, QMargins, QDateTime, QEvent;
+from PySide6.QtCore import QDate, QSize, QMargins, QDateTime, QEvent, QThread, QTimer;
 from PySide6.QtGui import QIcon, Qt, QFontDatabase, QFont, QPen, QColor;
 from PySide6.QtCharts import QChart, QSplineSeries, QChartView, QValueAxis, QDateTimeAxis, QScatterSeries, QLineSeries, QAreaSeries;
 from PySide6.QtSvgWidgets import QSvgWidget;
+from apis import WeatherWorker
+from storage import save_data
+from pathlib import Path
+
+WEATHER_DATA_FILE = Path("weather.json")
 
 class WeatherDashboard(QMainWindow):
+
+    def refresh_weather(self):
+        self.weather_thread = QThread()
+
+        self.weather_worker = WeatherWorker(self.settings)
+        self.weather_worker.moveToThread(self.weather_thread)
+
+        self.weather_thread.started.connect(self.weather_worker.run)
+        self.weather_worker.finished.connect(self.weather_refresh_finished)
+        self.weather_worker.error.connect(self.weather_refresh_error)
+        self.weather_worker.finished.connect(self.weather_thread.quit)
+        self.weather_worker.finished.connect(self.weather_worker.deleteLater)
+        self.weather_thread.finished.connect(self.weather_thread.deleteLater)
+
+        self.weather_thread.start()
+
+    def weather_refresh_error(self, error):
+        print(error)
+
+    def weather_refresh_finished(self, weather):
+        self.weather = weather
+        save_data(weather, WEATHER_DATA_FILE)
+        self.update_weather_data_display()
 
     def eventFilter(self, watched, event):
 
@@ -46,7 +74,7 @@ class WeatherDashboard(QMainWindow):
             if date_time.date() == date:
                 points.append((date_time, temperature))
 
-            if date_time.date() == next_date_time:
+            if date_time.date() == next_date_time and len(points) > 0:
                 points.append((date_time, temperature))
                 break
 
@@ -121,10 +149,15 @@ class WeatherDashboard(QMainWindow):
             self.feels_like_points = self.get_hourly_data(self.currentDate, "apparent_temperature")
             if not(self.feels_like_points):
                 self.chart.setVisible(False)
+                self.chart_type_widget.setVisible(False)
+                self.chart_min_avg_max.setVisible(False)
                 return
 
             self.temperature_points = self.get_hourly_data(self.currentDate, "temperature_2m")
             if not(self.temperature_points):
+                self.chart.setVisible(False)
+                self.chart_type_widget.setVisible(False)
+                self.chart_min_avg_max.setVisible(False)
                 return
             
             min_feels_like = min(self.feels_like_points, key= lambda point: point[1])[1]
@@ -161,6 +194,7 @@ class WeatherDashboard(QMainWindow):
             self.line_series.append(self.points[0][0].toMSecsSinceEpoch(), 0)
             self.line_series.append(self.points[-1][0].toMSecsSinceEpoch(), 0)
             self.chart.setVisible(True)
+            self.chart_type_widget.setVisible(True)
             self.tooltip.hide()
 
             self.chart_max.setText(f"High: {max_chart}{self.units}")
@@ -199,7 +233,13 @@ class WeatherDashboard(QMainWindow):
         header_layout = QHBoxLayout()
 
         self.currentDate = QDate.currentDate()
-        self.currentDateIndex = 7
+
+        self.currentDateIndex = 0
+
+        for index, date in enumerate(self.weather['daily']['time']):
+            if str(date) == str(QDate.currentDate().toPython()):
+                self.currentDateIndex = index
+                break
 
         self.date_label = QLabel()
         self.date_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -468,6 +508,8 @@ class WeatherDashboard(QMainWindow):
         self.main_chart_view.viewport().installEventFilter(self)
 
         self.chart.setVisible(False)
+        self.chart_min_avg_max.setVisible(False)
+        self.chart_type_widget.setVisible(False)
 
         self.tooltip = QLabel(self.main_chart_view)
         self.tooltip.setFont(QFont("Stack", 10))
@@ -495,6 +537,14 @@ class WeatherDashboard(QMainWindow):
 
         with open("style.qss") as file:
             self.setStyleSheet(file.read())
+
+        self.refresh_weather()
+
+        self.refresh_weather_timer = QTimer(self)
+
+        self.refresh_weather_timer.timeout.connect(self.refresh_weather)
+
+        self.refresh_weather_timer.start(1800000) # 30 minutes
 
 class WeatherIcon(QSvgWidget):
     def __init__(self, path, size = 64):

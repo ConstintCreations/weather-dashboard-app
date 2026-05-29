@@ -1,5 +1,6 @@
 import sys
 from PySide6.QtWidgets import QApplication
+from PySide6.QtCore import QDate
 from pathlib import Path
 from storage import load_data, save_data
 from apis import get_location, get_weather
@@ -73,10 +74,24 @@ if settings is None:
 # weather = get_weather(settings)
 # save_data(weather, WEATHER_DATA_FILE)
 
+weather = load_data(WEATHER_DATA_FILE)
+if weather is None:
+    weather = get_weather(settings)
+    save_data(weather, WEATHER_DATA_FILE)
+
+foundCurrentDate = False
+for index, date in enumerate(weather['daily']['time']):
+    if str(date) == str(QDate.currentDate().toPython()):
+        foundCurrentDate = True
+        break
+
+if foundCurrentDate == False:
+    weather = get_weather(settings)
+    save_data(weather, WEATHER_DATA_FILE)
 
 app = QApplication(sys.argv)
 
-window = WeatherDashboard(settings = settings, weather = load_data(WEATHER_DATA_FILE), weather_icon_mappings = load_data(WEATHER_ICON_MAPPINGS_FILE))
+window = WeatherDashboard(settings = settings, weather = weather, weather_icon_mappings = load_data(WEATHER_ICON_MAPPINGS_FILE))
 
 window.show()
 app.exec()
