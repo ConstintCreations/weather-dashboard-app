@@ -20,8 +20,8 @@ class WeatherDashboard(QMainWindow):
         return super().eventFilter(watched, event)
     
     def chart_hover(self, position):
-        chart_position = self.feels_like_chart.mapToValue(position)
-        closest_point = min(self.feels_like_points, key= lambda point: abs(point[0].toMSecsSinceEpoch() - chart_position.x()))
+        chart_position = self.main_chart.mapToValue(position)
+        closest_point = min(self.feels_like_points if self.isFeelsLikeChart else self.temperature_points, key= lambda point: abs(point[0].toMSecsSinceEpoch() - chart_position.x()))
         date_time, temperature = closest_point
 
         self.hover_dot.clear()
@@ -83,6 +83,14 @@ class WeatherDashboard(QMainWindow):
                 self.right_date_button.setEnabled(False)
                 self.right_date_button.setIcon(QIcon())
 
+    def set_feels_like_chart(self):
+        self.isFeelsLikeChart = True
+        self.update_weather_data_display()
+
+    def set_actual_temperature_chart(self):
+        self.isFeelsLikeChart = False
+        self.update_weather_data_display()            
+
     def update_weather_data_display(self):
         if not(self.weather is None):
 
@@ -102,40 +110,57 @@ class WeatherDashboard(QMainWindow):
 
             self.info_widget.setVisible(True)
 
-            self.feels_like_series.clear()
+            self.main_series.clear()
 
             self.feels_like_points = self.get_hourly_data(self.currentDate, "apparent_temperature")
-            
             if not(self.feels_like_points):
                 self.chart.setVisible(False)
                 return
-            
-            for date_time, temperature in self.feels_like_points:
-                self.feels_like_series.append(date_time.toMSecsSinceEpoch(), temperature)
-
-            self.feels_like_x.setRange(self.feels_like_points[0][0], self.feels_like_points[-1][0])
-            min_feels_like = min(self.feels_like_points, key= lambda point: point[1])[1]
-            max_feels_like = max(self.feels_like_points, key= lambda point: point[1])[1]
-            gap = (max_feels_like - min_feels_like) * 0.1
-            self.feels_like_y.setRange(min_feels_like - gap, max_feels_like + gap)
-
-            self.line_series.clear()
-            self.line_series.append(self.feels_like_points[0][0].toMSecsSinceEpoch(), 0)
-            self.line_series.append(self.feels_like_points[-1][0].toMSecsSinceEpoch(), 0)
-            self.chart.setVisible(True)
-            self.tooltip.hide()
-
-            self.chart_max.setText(f"High: {max_feels_like}{self.units}")
-            self.chart_avg.setText(f"Avg: {round((max_feels_like+min_feels_like)/2, 1)}{self.units}")
-            self.chart_min.setText(f"Low: {min_feels_like}{self.units}")
-            self.chart_min_avg_max.setVisible(True)
 
             self.temperature_points = self.get_hourly_data(self.currentDate, "temperature_2m")
             if not(self.temperature_points):
                 return
             
+            min_feels_like = min(self.feels_like_points, key= lambda point: point[1])[1]
+            max_feels_like = max(self.feels_like_points, key= lambda point: point[1])[1]
             min_temperature = min(self.temperature_points, key= lambda point: point[1])[1]
             max_temperature = max(self.temperature_points, key= lambda point: point[1])[1]
+
+            if self.isFeelsLikeChart:
+                self.points = self.feels_like_points
+                self.main_chart_title.setText("Feels Like Temperature")
+                self.main_series.setPen(self.fl_chart_line_pen)
+                self.area_series.setBrush(self.fl_area_fill_color)
+                self.hover_dot.setColor(QColor("#a85a00"))
+                self.hover_dot.setPen(QColor("#a85a00"))
+            else:
+                self.points = self.temperature_points
+                self.main_chart_title.setText("Actual Temperature")
+                self.main_series.setPen(self.at_chart_line_pen)
+                self.area_series.setBrush(self.at_area_fill_color)
+                self.hover_dot.setColor(QColor("#a80000"))
+                self.hover_dot.setPen(QColor("#a80000"))
+
+            for date_time, temperature in self.points:
+                self.main_series.append(date_time.toMSecsSinceEpoch(), temperature)
+
+            min_chart = min(self.points, key= lambda point: point[1])[1]
+            max_chart = max(self.points, key= lambda point: point[1])[1]
+
+            self.main_chart_x.setRange(self.points[0][0], self.points[-1][0])
+            gap = (max_chart - min_chart) * 0.1
+            self.main_chart_y.setRange(min_chart - gap, max_chart + gap)
+
+            self.line_series.clear()
+            self.line_series.append(self.points[0][0].toMSecsSinceEpoch(), 0)
+            self.line_series.append(self.points[-1][0].toMSecsSinceEpoch(), 0)
+            self.chart.setVisible(True)
+            self.tooltip.hide()
+
+            self.chart_max.setText(f"High: {max_chart}{self.units}")
+            self.chart_avg.setText(f"Avg: {round((max_chart+min_chart)/2, 1)}{self.units}")
+            self.chart_min.setText(f"Low: {min_chart}{self.units}")
+            self.chart_min_avg_max.setVisible(True)
 
             if not(str(self.weather['daily']['time'][self.currentDateIndex]) == str(QDate.currentDate().toPython())):
                 self.feels_like_label.setText(f"(Avg) Feels Like {round((max_feels_like+min_feels_like)/2, 1)}{self.units}")
@@ -175,6 +200,9 @@ class WeatherDashboard(QMainWindow):
 
         self.left_date_button = QPushButton()
         self.right_date_button = QPushButton()
+
+        self.left_date_button.setObjectName("leftDate")
+        self.right_date_button.setObjectName("rightDate")
 
         self.left_date_button.setIcon(QIcon("icons/leftArrow.svg"))
         self.right_date_button.setIcon(QIcon("icons/rightArrow.svg"))
@@ -302,6 +330,34 @@ class WeatherDashboard(QMainWindow):
 
         self.info_widget.setVisible(False)
 
+        self.chart_type_widget = QWidget()
+        self.chart_type_layout = QHBoxLayout(self.chart_type_widget)
+        self.chart_type_widget.setObjectName("chartTypeWidget")
+
+        self.feels_like_chart_type_button = QPushButton()
+        self.temperature_chart_type_button = QPushButton()
+
+        self.feels_like_chart_type_button.setFixedHeight(30)
+        self.temperature_chart_type_button.setFixedHeight(30)
+
+        self.feels_like_chart_type_button.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.temperature_chart_type_button.setCursor(Qt.CursorShape.PointingHandCursor)
+
+        self.feels_like_chart_type_button.setText("Feels Like Temperature")
+        self.temperature_chart_type_button.setText("Actual Temperature")
+
+        self.feels_like_chart_type_button.setFont(QFont("Stack", 14))
+        self.temperature_chart_type_button.setFont(QFont("Stack", 14))
+
+        self.feels_like_chart_type_button.setObjectName("feelsLikeChartButton")
+        self.temperature_chart_type_button.setObjectName("temperatureChartButton")
+
+        self.feels_like_chart_type_button.clicked.connect(self.set_feels_like_chart)
+        self.temperature_chart_type_button.clicked.connect(self.set_actual_temperature_chart)
+
+        self.chart_type_layout.addWidget(self.feels_like_chart_type_button)
+        self.chart_type_layout.addWidget(self.temperature_chart_type_button)
+
         self.chart = QWidget()
         self.chart.setObjectName("chart")
 
@@ -329,67 +385,74 @@ class WeatherDashboard(QMainWindow):
 
         self.chart_min_avg_max.setVisible(False)
 
-        self.main_chart_title = QLabel("Feels Like Temperature (\u00b0F)")
+        self.main_chart_title = QLabel("Feels Like Temperature")
         self.main_chart_title.setFont(QFont("Stack", 16))
 
-        self.feels_like_pen = QPen(QColor("#ff8800"))
-        self.feels_like_pen.setWidth(5)
-        self.feels_like_pen.setCapStyle(Qt.PenCapStyle.RoundCap)
+        self.fl_chart_line_pen = QPen(QColor("#ff8800"))
+        self.fl_chart_line_pen.setWidth(5)
+        self.fl_chart_line_pen.setCapStyle(Qt.PenCapStyle.RoundCap)
 
-        self.feels_like_grid_pen = QPen(QColor("#555555"))
-        self.feels_like_grid_pen.setWidth(3)
+        self.at_chart_line_pen = QPen(QColor("#ff0000"))
+        self.at_chart_line_pen.setWidth(5)
+        self.at_chart_line_pen.setCapStyle(Qt.PenCapStyle.RoundCap)
 
-        self.feels_like_series = QSplineSeries()
-        self.feels_like_series.setPen(self.feels_like_pen)
+        self.chart_pen = QPen(QColor("#555555"))
+        self.chart_pen.setWidth(3)
 
-        self.feels_like_chart = QChart()
-        self.feels_like_chart.legend().hide()
-        self.feels_like_chart.setBackgroundVisible(False)
-        self.feels_like_chart.setMargins(QMargins(0,0,0,0))
-        self.feels_like_chart.setPlotAreaBackgroundVisible(False)
-        self.feels_like_chart.addSeries(self.feels_like_series)
+        self.main_series = QSplineSeries()
+        self.main_series.setPen(self.fl_chart_line_pen)
 
-        self.feels_like_x = QDateTimeAxis()
-        self.feels_like_x.setFormat("h AP")
-        self.feels_like_x.setTickCount(5)
-        self.feels_like_x.setLabelsColor(QColor("#888888"))
-        self.feels_like_x.setGridLinePen(self.feels_like_grid_pen)
-        self.feels_like_x.setLinePen(self.feels_like_grid_pen)
-        self.feels_like_x.setLabelsFont(QFont("Stack", 10))
+        self.main_chart = QChart()
+        self.main_chart.legend().hide()
+        self.main_chart.setBackgroundVisible(False)
+        self.main_chart.setMargins(QMargins(0,0,0,0))
+        self.main_chart.setPlotAreaBackgroundVisible(False)
+        self.main_chart.addSeries(self.main_series)
+
+        self.main_chart_x = QDateTimeAxis()
+        self.main_chart_x.setFormat("h AP")
+        self.main_chart_x.setTickCount(5)
+        self.main_chart_x.setLabelsColor(QColor("#888888"))
+        self.main_chart_x.setGridLinePen(self.chart_pen)
+        self.main_chart_x.setLinePen(self.chart_pen)
+        self.main_chart_x.setLabelsFont(QFont("Stack", 10))
         
-        self.feels_like_chart.addAxis(self.feels_like_x, Qt.AlignmentFlag.AlignBottom)
-        self.feels_like_series.attachAxis(self.feels_like_x)
+        self.main_chart.addAxis(self.main_chart_x, Qt.AlignmentFlag.AlignBottom)
+        self.main_series.attachAxis(self.main_chart_x)
 
-        self.feels_like_y = QValueAxis()
-        self.feels_like_y.setGridLineVisible(False)
-        self.feels_like_y.setLineVisible(False)
-        self.feels_like_y.setLabelsFont(QFont("Stack", 10))
-        self.feels_like_y.setLabelsColor(QColor("#888888"))
+        self.main_chart_y = QValueAxis()
+        self.main_chart_y.setGridLineVisible(False)
+        self.main_chart_y.setLineVisible(False)
+        self.main_chart_y.setLabelsFont(QFont("Stack", 10))
+        self.main_chart_y.setLabelsColor(QColor("#888888"))
 
-        self.feels_like_chart.addAxis(self.feels_like_y, Qt.AlignmentFlag.AlignLeft)
-        self.feels_like_series.attachAxis(self.feels_like_y)
+        self.main_chart.addAxis(self.main_chart_y, Qt.AlignmentFlag.AlignLeft)
+        self.main_series.attachAxis(self.main_chart_y)
 
         self.hover_dot = QScatterSeries()
         self.hover_dot.setMarkerSize(12)
         self.hover_dot.setColor(QColor("#a85a00"))
         self.hover_dot.setPen(QColor("#a85a00"))
-        self.feels_like_chart.addSeries(self.hover_dot)
-        self.hover_dot.attachAxis(self.feels_like_x)
-        self.hover_dot.attachAxis(self.feels_like_y)
+        self.main_chart.addSeries(self.hover_dot)
+        self.hover_dot.attachAxis(self.main_chart_x)
+        self.hover_dot.attachAxis(self.main_chart_y)
 
         self.line_series = QLineSeries()
 
-        area_fill_color = QColor("#ff8800")
-        area_fill_color.setAlpha(50)
+        self.fl_area_fill_color = QColor("#ff8800")
+        self.fl_area_fill_color.setAlpha(50)
 
-        self.area_series = QAreaSeries(self.feels_like_series, self.line_series)
-        self.area_series.setBrush(area_fill_color)
+        self.at_area_fill_color = QColor("#ff0000")
+        self.at_area_fill_color.setAlpha(50)
+
+        self.area_series = QAreaSeries(self.main_series, self.line_series)
+        self.area_series.setBrush(self.fl_area_fill_color)
         self.area_series.setPen(Qt.PenStyle.NoPen)
-        self.feels_like_chart.addSeries(self.area_series)
-        self.area_series.attachAxis(self.feels_like_x)
-        self.area_series.attachAxis(self.feels_like_y)
+        self.main_chart.addSeries(self.area_series)
+        self.area_series.attachAxis(self.main_chart_x)
+        self.area_series.attachAxis(self.main_chart_y)
         
-        self.main_chart_view = QChartView(self.feels_like_chart)
+        self.main_chart_view = QChartView(self.main_chart)
         self.main_chart_view.viewport().setCursor(Qt.CursorShape.BlankCursor)
         self.main_chart_view.setFixedHeight(200)
         self.main_chart_view.setMouseTracking(True)
@@ -405,6 +468,7 @@ class WeatherDashboard(QMainWindow):
         self.tooltip.move(40, 0)
         self.tooltip.hide()
 
+        self.isFeelsLikeChart = True
         self.update_weather_data_display()
 
         self.chart_layout.addWidget(self.main_chart_title)
@@ -412,8 +476,9 @@ class WeatherDashboard(QMainWindow):
 
         layout.addStretch()
         layout.addWidget(self.info_widget)
-        layout.addSpacing(20)
         layout.addStretch()
+        layout.addSpacing(20)
+        layout.addWidget(self.chart_type_widget)
         layout.addWidget(self.chart)
         layout.addWidget(self.chart_min_avg_max)
         layout.addStretch()

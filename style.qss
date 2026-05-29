@@ -6,25 +6,44 @@ QWidget {
     color: #ffffff;
 }
                 
-QPushButton {
+QPushButton#leftDate, QPushButton#rightDate {
     background-color: rgba(0,0,0,20);
     border: none;
     border-radius: 12px;
     margin: 0px 10px;
 }
                 
-QPushButton:hover {  
+QPushButton#leftDate:hover, QPushButton#rightDate:hover {  
     background-color: rgba(0,0,0,40);
     border: 1px solid rgba(0,0,0,60);
 }
                 
-QPushButton:pressed { 
+QPushButton#leftDate:pressed, QPushButton#rightDate:pressed { 
     background-color: rgba(0,0,0,60);
     border: 1px solid rgba(0,0,0,80); 
 }
 
-QPushButton:disabled {
+QPushButton#leftDate:disabled, QPushButton#rightDate:disabled {
     background-color: rgba(0,0,0,0)
+}
+
+QPushButton#feelsLikeChartButton, QPushButton#temperatureChartButton {
+    background-color: transparent;
+    margin: 0px;
+    border: none;
+    border-radius: 12px;
+}
+
+QPushButton#feelsLikeChartButton:hover, QPushButton#temperatureChartButton:hover {
+    background-color: rgba(0,0,0,40);
+}
+
+QPushButton#feelsLikeChartButton:pressed, QPushButton#temperatureChartButton:pressed {
+    background-color: rgba(0,0,0,60);
+}
+
+#chartTypeWidget {
+    padding: 0px;
 }
 
 #dateLabel {
@@ -35,7 +54,7 @@ QChartView {
     background-color: transparent;
 }
 
-#chart, #chartMinAvgMax, #infoWidget {
+#chart, #chartMinAvgMax, #infoWidget, #chartTypeWidget {
     background-color: rgba(0, 0, 0, 0.2);
     border-radius: 12px;
     color: #ffffff;
