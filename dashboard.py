@@ -217,7 +217,7 @@ class WeatherDashboard(QMainWindow):
         self.weather_icon_mappings = weather_icon_mappings
 
         super().__init__()
-        self.resize(800, 450)
+        self.resize(900, 650)
 
         central_widget = QWidget()
         central_widget.setObjectName("centralWidget")
@@ -279,6 +279,9 @@ class WeatherDashboard(QMainWindow):
 
         layout.addLayout(header_layout)
         layout.addSpacing(20)
+
+        self.info_wrapper_widget = QWidget()
+        self.info_wrapper_layout = QHBoxLayout(self.info_wrapper_widget)
 
         self.info_widget = QWidget()
         self.info_widget.setObjectName("infoWidget")
@@ -377,6 +380,10 @@ class WeatherDashboard(QMainWindow):
         info_layout.addStretch()
 
         self.info_widget.setVisible(False)
+
+        self.info_wrapper_layout.addStretch()
+        self.info_wrapper_layout.addWidget(self.info_widget)
+        self.info_wrapper_layout.addStretch()
 
         self.chart_type_widget = QWidget()
         self.chart_type_layout = QHBoxLayout(self.chart_type_widget)
@@ -525,7 +532,7 @@ class WeatherDashboard(QMainWindow):
         self.chart_layout.addWidget(self.main_chart_view)
 
         layout.addStretch()
-        layout.addWidget(self.info_widget)
+        layout.addWidget(self.info_wrapper_widget)
         layout.addStretch()
         layout.addSpacing(20)
         layout.addWidget(self.chart_type_widget)
