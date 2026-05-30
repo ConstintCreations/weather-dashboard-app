@@ -3,7 +3,7 @@ from PySide6.QtWidgets import QApplication
 from storage import load_data
 from pathlib import Path
 
-from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QSlider, QDoubleSpinBox, QSystemTrayIcon;
+from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QSlider, QDoubleSpinBox, QSystemTrayIcon, QScrollArea;
 from PySide6.QtGui import Qt, QFontDatabase, QFont, QIcon;
 
 class Settings(QMainWindow):
@@ -31,9 +31,16 @@ class Settings(QMainWindow):
 
         self.setFont(QFont("Stack"))
 
-        layout = QVBoxLayout()
+        main_layout = QVBoxLayout(central_widget)
 
-        layout.addStretch()
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)
+        scroll_area.setFrameShape(QScrollArea.Shape.NoFrame)
+
+        content_widget = QWidget()
+        content_widget.setObjectName("contentWidget")
+
+        layout = QVBoxLayout(content_widget)
 
         self.location_widget = QWidget()
         self.location_layout = QVBoxLayout(self.location_widget)
@@ -82,6 +89,7 @@ class Settings(QMainWindow):
         self.temperature_units_slider.setFixedHeight(24)
         self.temperature_units_slider.setTickInterval(1)
         self.temperature_units_slider.setRange(0, 1)
+        self.temperature_units_slider.setCursor(Qt.CursorShape.SizeHorCursor)
         if self.settings["temperature_units"] == "fahrenheit":
             self.temperature_units_slider.setValue(1)
         else:    
@@ -108,6 +116,7 @@ class Settings(QMainWindow):
         self.precipitation_units_slider.setFixedHeight(24)
         self.precipitation_units_slider.setTickInterval(1)
         self.precipitation_units_slider.setRange(0, 1)
+        self.precipitation_units_slider.setCursor(Qt.CursorShape.SizeHorCursor)
         if self.settings["precipitation_units"] == "inch":
             self.precipitation_units_slider.setValue(1)
         else:    
@@ -125,13 +134,18 @@ class Settings(QMainWindow):
         self.apparel_label.setFont(QFont("Stack", 16))
         self.apparel_layout.addWidget(self.apparel_label)
         
+        layout.addStretch()
         layout.addWidget(self.location_widget)
+        layout.addStretch()
         layout.addWidget(self.temperature_units_widget)
+        layout.addStretch()
         layout.addWidget(self.precipitation_units_widget)
+        layout.addStretch()
         layout.addWidget(self.apparel_widget)
         layout.addStretch()
 
-        central_widget.setLayout(layout)
+        scroll_area.setWidget(content_widget)
+        main_layout.addWidget(scroll_area)
 
         with open("style.qss") as file:
             self.setStyleSheet(file.read())

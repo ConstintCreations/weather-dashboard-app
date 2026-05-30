@@ -1,4 +1,4 @@
-QWidget#centralWidget {
+QWidget#centralWidget, QWidget#contentWidget {
     background-color: #303030;
 }
 
@@ -88,11 +88,11 @@ QSlider::handle:horizontal {
     margin: -4px 0px;
 }
 
-QSlider::handle:horizontal:hover {
+QSlider::handle:horizontal:hover, QScrollBar:handle:vertical:hover {
     background-color: #7a8081;
 }
 
-QSlider::handle:horizontal:pressed {
+QSlider::handle:horizontal:pressed, QScrollBar:handle:vertical:pressed {
     background-color: #909798;
 }
 
@@ -105,5 +105,32 @@ QDoubleSpinBox {
 
 QDoubleSpinBox:up-button, QDoubleSpinBox:down-button {
     width: 0px;
+    border: none;
+}
+
+QScrollArea {
+    background-color: transparent;
+    border: none;
+}
+
+QScrollBar:vertical {
+    background-color: transparent;
+    border: none;
+}
+
+QScrollBar:handle:vertical {
+    background-color: #686d6e;
+    border-radius: 6px;
+    border: none;
+}
+
+QScrollBar:vertical {
+    background-color: transparent;
+    border: none;
+}
+
+QScrollBar:add-line:vertical, QScrollBar:sub-line:vertical {
+    width: 0px;
+    height: 0px;
     border: none;
 }
