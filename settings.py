@@ -1,12 +1,18 @@
 import sys
 from PySide6.QtWidgets import QApplication
 from storage import load_data
-from pathlib import Path
 
-from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QSlider, QDoubleSpinBox, QSystemTrayIcon, QScrollArea;
+from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QSlider, QDoubleSpinBox, QScrollArea;
 from PySide6.QtGui import Qt, QFontDatabase, QFont, QIcon;
+from PySide6.QtCore import Signal;
+from pathlib import Path;
+from storage import save_data;
+
+SETTINGS_FILE = Path("settings.json")
 
 class Settings(QMainWindow):
+    saved = Signal(dict)
+
     def __init__(self, settings):
         super().__init__()
 
@@ -16,10 +22,6 @@ class Settings(QMainWindow):
 
         self.setWindowTitle("Weather Dashboard - Settings")
         self.resize(600, 400)
-
-        self.tray_icon = QSystemTrayIcon(self)
-        self.tray_icon.setIcon(QIcon("icons/weather/day/partlyCloudyDay.svg"))
-        self.tray_icon.show()
 
         central_widget = QWidget()
         central_widget.setObjectName("centralWidget")
@@ -90,10 +92,10 @@ class Settings(QMainWindow):
         self.temperature_units_slider.setTickInterval(1)
         self.temperature_units_slider.setRange(0, 1)
         self.temperature_units_slider.setCursor(Qt.CursorShape.SizeHorCursor)
-        if self.settings["temperature_units"] == "fahrenheit":
-            self.temperature_units_slider.setValue(1)
-        else:    
+        if self.settings["temperature_units"] == "celsius":
             self.temperature_units_slider.setValue(0)
+        else:    
+            self.temperature_units_slider.setValue(1)
         self.temperature_units_edit_layout.addSpacing(50)
         self.temperature_units_edit_layout.addWidget(self.temperature_units_celsius_label)
         self.temperature_units_edit_layout.addWidget(self.temperature_units_slider)
@@ -117,10 +119,10 @@ class Settings(QMainWindow):
         self.precipitation_units_slider.setTickInterval(1)
         self.precipitation_units_slider.setRange(0, 1)
         self.precipitation_units_slider.setCursor(Qt.CursorShape.SizeHorCursor)
-        if self.settings["precipitation_units"] == "inch":
-            self.precipitation_units_slider.setValue(1)
-        else:    
+        if self.settings["precipitation_units"] == "mm":
             self.precipitation_units_slider.setValue(0)
+        else:    
+            self.precipitation_units_slider.setValue(1)
         self.precipitation_units_edit_layout.addSpacing(50)
         self.precipitation_units_edit_layout.addWidget(self.precipitation_units_mm_label)
         self.precipitation_units_edit_layout.addWidget(self.precipitation_units_slider)
@@ -133,6 +135,26 @@ class Settings(QMainWindow):
         self.apparel_label = QLabel("Apparel", alignment = Qt.AlignmentFlag.AlignCenter)
         self.apparel_label.setFont(QFont("Stack", 16))
         self.apparel_layout.addWidget(self.apparel_label)
+
+        self.bottom_buttons_widget = QWidget()
+        self.bottom_buttons_layout = QHBoxLayout(self.bottom_buttons_widget)
+        self.cancel_button = QPushButton("Cancel")
+        self.cancel_button.setFont(QFont("Stack", 12))
+        self.cancel_button.setObjectName("settingsCancelButton")
+        self.cancel_button.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.cancel_button.setFixedSize(100, 40)
+        self.cancel_button.clicked.connect(self.close)
+        self.save_button = QPushButton("Save")
+        self.save_button.setFont(QFont("Stack", 12))
+        self.save_button.setObjectName("settingsSaveButton")
+        self.save_button.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.save_button.setFixedSize(100, 40)
+        self.save_button.clicked.connect(self.save_settings)
+        self.bottom_buttons_layout.addStretch()
+        self.bottom_buttons_layout.addWidget(self.cancel_button)
+        self.bottom_buttons_layout.addStretch()
+        self.bottom_buttons_layout.addWidget(self.save_button)
+        self.bottom_buttons_layout.addStretch()
         
         layout.addStretch()
         layout.addWidget(self.location_widget)
@@ -143,6 +165,8 @@ class Settings(QMainWindow):
         layout.addStretch()
         layout.addWidget(self.apparel_widget)
         layout.addStretch()
+        layout.addWidget(self.bottom_buttons_widget)
+        layout.addStretch()
 
         scroll_area.setWidget(content_widget)
         main_layout.addWidget(scroll_area)
@@ -150,9 +174,23 @@ class Settings(QMainWindow):
         with open("style.qss") as file:
             self.setStyleSheet(file.read())
 
+    def save_settings(self):
+        latitude = self.latitude_spinbox.value()
+        longitude = self.longitude_spinbox.value()
+        temperature_units = "fahrenheit" if self.temperature_units_slider.value() == 1 else "celsius"
+        precipitation_units = "inch" if self.precipitation_units_slider.value() == 1 else "mm"
+        self.settings["latitude"] = latitude
+        self.settings["longitude"] = longitude
+        self.settings["temperature_units"] = temperature_units
+        self.settings["precipitation_units"] = precipitation_units
+
+        save_data(self.settings, SETTINGS_FILE)
+        self.saved.emit(self.settings)
+
+        self.close()
+
 #Easier for testing
 """
-SETTINGS_FILE = Path("settings.json")
 app = QApplication(sys.argv)
 window = Settings(load_data(SETTINGS_FILE))
 

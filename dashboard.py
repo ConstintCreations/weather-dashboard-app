@@ -132,6 +132,11 @@ class WeatherDashboard(QMainWindow):
     def open_settings(self):
         self.settings_window = Settings(self.settings)
         self.settings_window.show()
+        self.settings_window.saved.connect(self.settings_saved)
+
+    def settings_saved(self, new_settings):
+        self.settings = new_settings
+        self.refresh_weather()
 
     def set_feels_like_chart(self):
         self.isFeelsLikeChart = True
