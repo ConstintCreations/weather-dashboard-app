@@ -6,19 +6,19 @@ QWidget {
     color: #ffffff;
 }
                 
-QPushButton#leftDate, QPushButton#rightDate {
+QPushButton#leftDate, QPushButton#rightDate, QPushButton#currentDateButton {
     background-color: rgba(0,0,0,20);
     border: none;
     border-radius: 12px;
     margin: 0px 10px;
 }
                 
-QPushButton#leftDate:hover, QPushButton#rightDate:hover {  
+QPushButton#leftDate:hover, QPushButton#rightDate:hover, QPushButton#currentDateButton:hover {  
     background-color: rgba(0,0,0,40);
     border: 1px solid rgba(0,0,0,60);
 }
                 
-QPushButton#leftDate:pressed, QPushButton#rightDate:pressed { 
+QPushButton#leftDate:pressed, QPushButton#rightDate:pressed, QPushButton#currentDateButton:pressed { 
     background-color: rgba(0,0,0,60);
     border: 1px solid rgba(0,0,0,80); 
 }

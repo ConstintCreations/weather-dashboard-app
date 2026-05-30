@@ -81,35 +81,47 @@ class WeatherDashboard(QMainWindow):
         return points
 
     def update_date_display(self):
-        date_string = self.currentDate.toString("dddd, MMMM d")
+        date_string = self.current_date.toString("dddd, MMMM d")
 
         self.date_label.setText(date_string)
 
         self.setWindowTitle(f"Weather Dashboard - {date_string}")
 
     def previous_date(self):
-        if (self.currentDateIndex - 1) >= 0: 
-            self.currentDateIndex -= 1
-            self.currentDate = self.currentDate.addDays(-1)
+        if (self.current_date_index - 1) >= 0: 
+            self.current_date_index -= 1
+            self.current_date = self.current_date.addDays(-1)
             self.update_date_display()
             self.update_weather_data_display()
             self.right_date_button.setEnabled(True)
             self.right_date_button.setIcon(QIcon("icons/rightArrow.svg"))
-            if self.currentDateIndex == 0:
+            if self.current_date_index == 0:
                 self.left_date_button.setEnabled(False)
                 self.left_date_button.setIcon(QIcon())
 
     def next_date(self):
-        if (self.currentDateIndex + 1) <= 21:
-            self.currentDateIndex += 1
-            self.currentDate = self.currentDate.addDays(1)
+        if (self.current_date_index + 1) <= 21:
+            self.current_date_index += 1
+            self.current_date = self.current_date.addDays(1)
             self.update_date_display()
             self.update_weather_data_display()
             self.left_date_button.setEnabled(True)
             self.left_date_button.setIcon(QIcon("icons/leftArrow.svg"))
-            if self.currentDateIndex == 21:
+            if self.current_date_index == 21:
                 self.right_date_button.setEnabled(False)
                 self.right_date_button.setIcon(QIcon())
+
+    def reset_to_current_date(self):
+        self.current_date = QDate.currentDate()
+        self.current_date_index = 0
+
+        for index, date in enumerate(self.weather['daily']['time']):
+            if str(date) == str(QDate.currentDate().toPython()):
+                self.current_date_index = index
+                break
+        
+        self.update_date_display()
+        self.update_weather_data_display()
 
     def set_feels_like_chart(self):
         self.isFeelsLikeChart = True
@@ -135,27 +147,27 @@ class WeatherDashboard(QMainWindow):
             else:
                 precipitation_units = "mm"
 
-            if str(self.weather['daily']['time'][self.currentDateIndex]) == str(QDate.currentDate().toPython()):
+            if str(self.weather['daily']['time'][self.current_date_index]) == str(QDate.currentDate().toPython()):
                 self.temperature_label.setText(f"{self.weather['current']['temperature_2m']}{self.units}")
                 self.feels_like_label.setText(f"Feels Like {self.weather['current']['apparent_temperature']}{self.units}")
                 self.weather_icon.load(self.weather_icon_mappings[f"{self.weather["current"]["weather_code"]}"]["day" if self.weather["current"]["is_day"] == 1 else "night"]["icon"])
                 self.weather_label.setText(self.weather_icon_mappings[f"{self.weather["current"]["weather_code"]}"]["day" if self.weather["current"]["is_day"] == 1 else "night"]["description"])
             
-            self.precipitation_chance_sum_label.setText(f"{self.weather['daily']['precipitation_probability_max'][self.currentDateIndex]}% | {round(self.weather['daily']['precipitation_sum'][self.currentDateIndex], 2)} {precipitation_units}")
-            self.sun_label.setText(f"{QDateTime.fromString(self.weather['daily']['sunrise'][self.currentDateIndex], "yyyy-MM-ddTHH:mm").toString("h:mm AP")} - {QDateTime.fromString(self.weather['daily']['sunset'][self.currentDateIndex], "yyyy-MM-ddTHH:mm").toString("h:mm AP")}")
+            self.precipitation_chance_sum_label.setText(f"{self.weather['daily']['precipitation_probability_max'][self.current_date_index]}% | {round(self.weather['daily']['precipitation_sum'][self.current_date_index], 2)} {precipitation_units}")
+            self.sun_label.setText(f"{QDateTime.fromString(self.weather['daily']['sunrise'][self.current_date_index], "yyyy-MM-ddTHH:mm").toString("h:mm AP")} - {QDateTime.fromString(self.weather['daily']['sunset'][self.current_date_index], "yyyy-MM-ddTHH:mm").toString("h:mm AP")}")
 
             self.info_widget.setVisible(True)
 
             self.main_series.clear()
 
-            self.feels_like_points = self.get_hourly_data(self.currentDate, "apparent_temperature")
+            self.feels_like_points = self.get_hourly_data(self.current_date, "apparent_temperature")
             if not(self.feels_like_points):
                 self.chart.setVisible(False)
                 self.chart_type_widget.setVisible(False)
                 self.chart_min_avg_max.setVisible(False)
                 return
 
-            self.temperature_points = self.get_hourly_data(self.currentDate, "temperature_2m")
+            self.temperature_points = self.get_hourly_data(self.current_date, "temperature_2m")
             if not(self.temperature_points):
                 self.chart.setVisible(False)
                 self.chart_type_widget.setVisible(False)
@@ -206,11 +218,11 @@ class WeatherDashboard(QMainWindow):
 
             self.apparel_label.setText(self.get_apparel(round((max_feels_like+min_feels_like)/2, 1)))
 
-            if not(str(self.weather['daily']['time'][self.currentDateIndex]) == str(QDate.currentDate().toPython())):
+            if not(str(self.weather['daily']['time'][self.current_date_index]) == str(QDate.currentDate().toPython())):
                 self.feels_like_label.setText(f"(Avg) Feels Like {round((max_feels_like+min_feels_like)/2, 1)}{self.units}")
                 self.temperature_label.setText(f"(Avg) {round((max_temperature+min_temperature)/2, 1)}{self.units}") 
-                self.weather_icon.load(self.weather_icon_mappings[f"{self.weather["daily"]["weather_code"][self.currentDateIndex]}"]["day"]["icon"])
-                self.weather_label.setText(self.weather_icon_mappings[f"{self.weather["daily"]["weather_code"][self.currentDateIndex]}"]["day"]["description"])           
+                self.weather_icon.load(self.weather_icon_mappings[f"{self.weather["daily"]["weather_code"][self.current_date_index]}"]["day"]["icon"])
+                self.weather_label.setText(self.weather_icon_mappings[f"{self.weather["daily"]["weather_code"][self.current_date_index]}"]["day"]["description"])           
 
 
     def __init__(self, settings, weather, weather_icon_mappings):
@@ -219,7 +231,7 @@ class WeatherDashboard(QMainWindow):
         self.weather_icon_mappings = weather_icon_mappings
 
         super().__init__()
-        self.resize(900, 650)
+        self.resize(1000, 600)
 
         central_widget = QWidget()
         central_widget.setObjectName("centralWidget")
@@ -234,13 +246,13 @@ class WeatherDashboard(QMainWindow):
         layout = QVBoxLayout()
         header_layout = QHBoxLayout()
 
-        self.currentDate = QDate.currentDate()
+        self.current_date = QDate.currentDate()
 
-        self.currentDateIndex = 0
+        self.current_date_index = 0
 
         for index, date in enumerate(self.weather['daily']['time']):
             if str(date) == str(QDate.currentDate().toPython()):
-                self.currentDateIndex = index
+                self.current_date_index = index
                 break
 
         self.date_label = QLabel()
@@ -271,6 +283,15 @@ class WeatherDashboard(QMainWindow):
 
         self.update_date_display()
 
+        self.current_date_button = QPushButton()
+        self.current_date_button.setObjectName("currentDateButton")
+        self.current_date_button.setIcon(QIcon("icons/calendar.svg"))
+        self.current_date_button.setIconSize(QSize(20, 20))
+        self.current_date_button.setFixedSize(80, 30)
+        self.current_date_button.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.current_date_button.clicked.connect(self.reset_to_current_date)
+
+        header_layout.addWidget(self.current_date_button)
         header_layout.addStretch()
         header_layout.addWidget(self.left_date_button)
         header_layout.addSpacing(15)
@@ -280,7 +301,7 @@ class WeatherDashboard(QMainWindow):
         header_layout.addStretch()
 
         layout.addLayout(header_layout)
-        layout.addSpacing(20)
+        #layout.addSpacing(20)
 
         self.info_wrapper_widget = QWidget()
         self.info_wrapper_layout = QHBoxLayout(self.info_wrapper_widget)
@@ -293,7 +314,7 @@ class WeatherDashboard(QMainWindow):
 
         self.weather_widget = QWidget()
         self.weather_layout = QVBoxLayout(self.weather_widget)
-        self.weather_icon = WeatherIcon("icons/weather/day/sun.svg", 128)
+        self.weather_icon = WeatherIcon("icons/weather/day/sun.svg", 96)
         self.weather_label = QLabel()
         self.weather_label.setFont(QFont("Stack", 16))
         self.weather_layout.addWidget(self.weather_icon, alignment=Qt.AlignmentFlag.AlignCenter)
@@ -536,7 +557,7 @@ class WeatherDashboard(QMainWindow):
         layout.addStretch()
         layout.addWidget(self.info_wrapper_widget)
         layout.addStretch()
-        layout.addSpacing(20)
+        #layout.addSpacing(20)
         layout.addWidget(self.chart_type_widget)
         layout.addWidget(self.chart)
         layout.addWidget(self.chart_min_avg_max)
