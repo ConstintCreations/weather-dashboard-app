@@ -73,3 +73,37 @@ QLabel#tooltip {
 #feelsLikeLabel {
     color: #b6b6b6;
 }
+
+QSlider::groove:horizontal {
+    background-color: #515456;
+    border-radius: 4px;
+    height: 8px;
+}
+
+QSlider::handle:horizontal {
+    width: 16px;
+    height: 16px;
+    background-color: #686d6e;
+    border-radius: 8px;
+    margin: -4px 0px;
+}
+
+QSlider::handle:horizontal:hover {
+    background-color: #7a8081;
+}
+
+QSlider::handle:horizontal:pressed {
+    background-color: #909798;
+}
+
+QDoubleSpinBox {
+    background-color: #515456;
+    border-radius: 8px;
+    padding: 4px;
+    border: 3px solid #404346;
+}
+
+QDoubleSpinBox:up-button, QDoubleSpinBox:down-button {
+    width: 0px;
+    border: none;
+}

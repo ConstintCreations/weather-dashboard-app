@@ -13,6 +13,9 @@ WEATHER_DATA_FILE = Path("weather.json")
 class WeatherDashboard(QMainWindow):
 
     def refresh_weather(self):
+        if self.refreshing == True:
+            return
+        self.refreshing = True
         self.weather_thread = QThread()
 
         self.weather_worker = WeatherWorker(self.settings)
@@ -29,11 +32,13 @@ class WeatherDashboard(QMainWindow):
 
     def weather_refresh_error(self, error):
         print(error)
+        self.refreshing = False
 
     def weather_refresh_finished(self, weather):
         self.weather = weather
         save_data(weather, WEATHER_DATA_FILE)
         self.update_weather_data_display()
+        self.refreshing = False
 
     def eventFilter(self, watched, event):
 
@@ -582,6 +587,8 @@ class WeatherDashboard(QMainWindow):
 
         with open("style.qss") as file:
             self.setStyleSheet(file.read())
+
+        self.refreshing = False
 
         self.refresh_weather()
 

@@ -3,7 +3,7 @@ from PySide6.QtWidgets import QApplication
 from storage import load_data
 from pathlib import Path
 
-from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QSlider, QDoubleSpinBox;
+from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QSlider, QDoubleSpinBox, QAbstractSpinBox;
 from PySide6.QtGui import Qt, QFontDatabase, QFont;
 
 class Settings(QMainWindow):
@@ -38,7 +38,7 @@ class Settings(QMainWindow):
         self.latitude_edit_layout = QHBoxLayout(self.latitude_edit_widget)
         self.latitude_label = QLabel("Latitude: ", alignment = Qt.AlignmentFlag.AlignLeft)
         self.latitude_label.setFont(QFont("Stack", 12))
-        self.latitude_spinbox = QDoubleSpinBox()
+        self.latitude_spinbox = QDoubleSpinBox(alignment = Qt.AlignmentFlag.AlignCenter)
         self.latitude_spinbox.setFont(QFont("Stack", 12))
         self.latitude_spinbox.setRange(-90, 90)
         self.latitude_spinbox.setDecimals(4)
@@ -50,7 +50,7 @@ class Settings(QMainWindow):
         self.longitude_edit_layout = QHBoxLayout(self.longitude_edit_widget)
         self.longitude_label = QLabel("Longitude: ", alignment = Qt.AlignmentFlag.AlignLeft)
         self.longitude_label.setFont(QFont("Stack", 12))
-        self.longitude_spinbox = QDoubleSpinBox()
+        self.longitude_spinbox = QDoubleSpinBox(alignment = Qt.AlignmentFlag.AlignCenter)
         self.longitude_spinbox.setFont(QFont("Stack", 12))
         self.longitude_spinbox.setRange(-180, 180)
         self.longitude_spinbox.setDecimals(4)
@@ -73,6 +73,7 @@ class Settings(QMainWindow):
         self.temperature_units_fahrenheit_label = QLabel("\u00b0F")
         self.temperature_units_fahrenheit_label.setFont(QFont("Stack", 12))
         self.temperature_units_slider = QSlider(Qt.Horizontal)
+        self.temperature_units_slider.setFixedHeight(24)
         self.temperature_units_slider.setTickInterval(1)
         self.temperature_units_slider.setRange(0, 1)
         if self.settings["temperature_units"] == "fahrenheit":
@@ -98,6 +99,7 @@ class Settings(QMainWindow):
         self.precipitation_units_inch_label = QLabel("in.")
         self.precipitation_units_inch_label.setFont(QFont("Stack", 12))
         self.precipitation_units_slider = QSlider(Qt.Horizontal)
+        self.precipitation_units_slider.setFixedHeight(24)
         self.precipitation_units_slider.setTickInterval(1)
         self.precipitation_units_slider.setRange(0, 1)
         if self.settings["precipitation_units"] == "inch":
@@ -129,11 +131,11 @@ class Settings(QMainWindow):
             self.setStyleSheet(file.read())
 
 #Easier for testing
-"""
+#"""
 SETTINGS_FILE = Path("settings.json")
 app = QApplication(sys.argv)
 window = Settings(load_data(SETTINGS_FILE))
 
 window.show()
 app.exec()
-"""
+#"""
