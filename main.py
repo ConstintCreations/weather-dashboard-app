@@ -70,9 +70,6 @@ if settings is None:
             ]
         }
 
-# weather = get_weather(settings)
-# save_data(weather, WEATHER_DATA_FILE)
-
 weather = load_data(WEATHER_DATA_FILE)
 if weather is None:
     weather = get_weather(settings)

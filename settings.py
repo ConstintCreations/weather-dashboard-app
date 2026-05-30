@@ -12,7 +12,7 @@ class Settings(QMainWindow):
 
         self.settings = settings
 
-        self.setWindowTitle("Settings")
+        self.setWindowTitle("Weather Dashboard - Settings")
         self.resize(600, 400)
 
         central_widget = QWidget()
@@ -129,9 +129,11 @@ class Settings(QMainWindow):
             self.setStyleSheet(file.read())
 
 #Easier for testing
+"""
 SETTINGS_FILE = Path("settings.json")
 app = QApplication(sys.argv)
 window = Settings(load_data(SETTINGS_FILE))
 
 window.show()
 app.exec()
+"""

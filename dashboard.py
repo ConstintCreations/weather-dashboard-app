@@ -6,6 +6,7 @@ from PySide6.QtSvgWidgets import QSvgWidget;
 from apis import WeatherWorker
 from storage import save_data
 from pathlib import Path
+from settings import Settings
 
 WEATHER_DATA_FILE = Path("weather.json")
 
@@ -122,6 +123,10 @@ class WeatherDashboard(QMainWindow):
         
         self.update_date_display()
         self.update_weather_data_display()
+
+    def open_settings(self):
+        self.settings_window = Settings(self.settings)
+        self.settings_window.show()
 
     def set_feels_like_chart(self):
         self.isFeelsLikeChart = True
@@ -287,11 +292,19 @@ class WeatherDashboard(QMainWindow):
         self.current_date_button.setObjectName("currentDateButton")
         self.current_date_button.setIcon(QIcon("icons/calendar.svg"))
         self.current_date_button.setIconSize(QSize(20, 20))
-        self.current_date_button.setFixedSize(80, 30)
+        self.current_date_button.setFixedSize(60, 30)
         self.current_date_button.setCursor(Qt.CursorShape.PointingHandCursor)
         self.current_date_button.clicked.connect(self.reset_to_current_date)
 
-        header_layout.addWidget(self.current_date_button)
+        self.settings_button = QPushButton()
+        self.settings_button.setObjectName("settingsButton")
+        self.settings_button.setIcon(QIcon("icons/settings.svg"))
+        self.settings_button.setIconSize(QSize(20, 20))
+        self.settings_button.setFixedSize(60, 30)
+        self.settings_button.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.settings_button.clicked.connect(self.open_settings)
+
+        header_layout.addSpacing(130)
         header_layout.addStretch()
         header_layout.addWidget(self.left_date_button)
         header_layout.addSpacing(15)
@@ -299,6 +312,8 @@ class WeatherDashboard(QMainWindow):
         header_layout.addSpacing(15)
         header_layout.addWidget(self.right_date_button)
         header_layout.addStretch()
+        header_layout.addWidget(self.current_date_button)
+        header_layout.addWidget(self.settings_button)
 
         layout.addLayout(header_layout)
         #layout.addSpacing(20)
