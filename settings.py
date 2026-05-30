@@ -3,8 +3,8 @@ from PySide6.QtWidgets import QApplication
 from storage import load_data
 from pathlib import Path
 
-from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QSlider, QDoubleSpinBox, QAbstractSpinBox;
-from PySide6.QtGui import Qt, QFontDatabase, QFont;
+from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QSlider, QDoubleSpinBox, QSystemTrayIcon;
+from PySide6.QtGui import Qt, QFontDatabase, QFont, QIcon;
 
 class Settings(QMainWindow):
     def __init__(self, settings):
@@ -12,8 +12,14 @@ class Settings(QMainWindow):
 
         self.settings = settings
 
+        self.setWindowIcon(QIcon("icons/settings.svg"))
+
         self.setWindowTitle("Weather Dashboard - Settings")
         self.resize(600, 400)
+
+        self.tray_icon = QSystemTrayIcon(self)
+        self.tray_icon.setIcon(QIcon("icons/weather/day/partlyCloudyDay.svg"))
+        self.tray_icon.show()
 
         central_widget = QWidget()
         central_widget.setObjectName("centralWidget")
@@ -131,11 +137,11 @@ class Settings(QMainWindow):
             self.setStyleSheet(file.read())
 
 #Easier for testing
-#"""
+"""
 SETTINGS_FILE = Path("settings.json")
 app = QApplication(sys.argv)
 window = Settings(load_data(SETTINGS_FILE))
 
 window.show()
 app.exec()
-#"""
+"""

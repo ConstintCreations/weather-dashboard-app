@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton;
+from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QSystemTrayIcon;
 from PySide6.QtCore import QDate, QSize, QMargins, QDateTime, QEvent, QThread, QTimer;
 from PySide6.QtGui import QIcon, Qt, QFontDatabase, QFont, QPen, QColor;
 from PySide6.QtCharts import QChart, QSplineSeries, QChartView, QValueAxis, QDateTimeAxis, QScatterSeries, QLineSeries, QAreaSeries;
@@ -242,6 +242,12 @@ class WeatherDashboard(QMainWindow):
 
         super().__init__()
         self.resize(1000, 600)
+
+        self.setWindowIcon(QIcon("icons/weather/day/partlyCloudyDay.svg"))
+
+        self.tray_icon = QSystemTrayIcon(self)
+        self.tray_icon.setIcon(QIcon("icons/weather/day/partlyCloudyDay.svg"))
+        self.tray_icon.show()
 
         central_widget = QWidget()
         central_widget.setObjectName("centralWidget")
